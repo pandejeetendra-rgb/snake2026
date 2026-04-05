@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Cyber Snake: Tap Bait Smartphone Version</title>
+  <title>Cyber Snake: Smartphone Version</title>
   <style>
     :root {
       --panel: #111827;
@@ -119,10 +119,10 @@
       max-width: 100%;
       height: auto;
       display: block;
-      touch-action: none;
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
+      touch-action: none;
     }
 
     .tap-hint {
@@ -137,15 +137,53 @@
       pointer-events: none;
     }
 
-    .actions {
+    .option-strip {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr;
       gap: 6px;
       margin-top: 6px;
     }
 
-    .bait-help {
-      display: none;
+    .option-pill {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      background: var(--panel-2);
+      border-radius: 10px;
+      padding: 8px;
+      min-height: 42px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      cursor: pointer;
+      color: var(--text);
+      font: inherit;
+      text-align: left;
+      width: 100%;
+    }
+
+    .option-pill.selected {
+      border-color: rgba(255,255,255,0.5);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+
+    .option-pill:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex: 0 0 12px;
+      margin-top: 2px;
+    }
+
+    .option-pill span {
+      font-size: 0.74rem;
+      line-height: 1.25;
+      white-space: normal;
+      overflow: hidden;
     }
 
     .actions {
@@ -190,21 +228,22 @@
   <div class="app">
     <section class="card">
       <h1 class="title">Cyber Snake</h1>
-      <p class="subtitle">Tap one bait on the board. The snake automatically follows the path to that bait. Only A, B, C and D are shown on the board. Full option details are shown below.</p>
+      <p class="subtitle">Tap an option below the board. The snake will automatically follow the path to the matching bait on the board. Wrap mode is always on.</p>
     </section>
 
     <section class="card">
       <div class="question-label">Question</div>
       <div class="question-text" id="questionText">Tap Start to begin.</div>
       <div class="progress-line" id="progressLine">Question progress will appear here.</div>
-      <div class="feedback-box info" id="feedbackBox">Tap one bait option on the board.</div>
+      <div class="feedback-box info" id="feedbackBox">Tap one option below the board.</div>
     </section>
 
     <section class="card">
       <div class="canvas-wrap">
         <canvas id="gameCanvas" width="340" height="340"></canvas>
-        <div class="tap-hint">Tap A / B / C / D</div>
+        <div class="tap-hint">Snake auto-moves</div>
       </div>
+      <div class="option-strip" id="optionStrip"></div>
       <div class="actions">
         <button class="action-btn start" id="startBtn">Start</button>
         <button class="action-btn pause" id="pauseBtn">Pause</button>
@@ -212,16 +251,16 @@
       </div>
     </section>
 
-    <p class="footer-note">Wrap mode is always on. Score is shown at the end only.</p>
+    <p class="footer-note">Score is shown at the end only.</p>
   </div>
 
   <script>
     const GRID_SIZE = 16;
-    const STEP_SPEED = 260;
+    const STEP_SPEED = 220;
     const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
 
     const QUESTIONS = [
-      {q:'What is cyber stalking?', o:['Harassing a person online','Improving network speed','Making software backup','Blocking a printer'], a:'Harassing a person online'},
+      {q:'What is cyber stalking?', o:['A person is harassed online','Network speed is monitored','Software is copied illegally','A website is blocked'], a:'A person is harassed online'},
       {q:'Phishing is mainly used to:', o:['Steal sensitive information','Improve internet speed','Repair system files','Encrypt all folders'], a:'Steal sensitive information'},
       {q:'Software piracy means:', o:['Copying software illegally','Using free software legally','Installing antivirus','Updating licensed software'], a:'Copying software illegally'},
       {q:'Hacking means:', o:['Unauthorized access to a system','Sending bulk email','Deleting cookies only','Browsing privately'], a:'Unauthorized access to a system'},
@@ -239,14 +278,13 @@
       {q:'A Trojan horse is:', o:['A hidden harmful program','A fast antivirus tool','A safe browser plug-in','A firewall setting'], a:'A hidden harmful program'}
     ];
 
-    let questionDeck = [];
-
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const questionText = document.getElementById('questionText');
     const feedbackBox = document.getElementById('feedbackBox');
     const progressLine = document.getElementById('progressLine');
-        const startBtn = document.getElementById('startBtn');
+    const optionStrip = document.getElementById('optionStrip');
+    const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const resetBtn = document.getElementById('resetBtn');
 
@@ -262,6 +300,17 @@
     let moving = false;
     let autoPath = [];
     let timer = null;
+    let selectedLabel = null;
+    let questionDeck = [];
+
+    function shuffle(array) {
+      const a = [...array];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
 
     function resize() {
       const maxWidth = Math.min(window.innerWidth - 20, 420);
@@ -286,7 +335,7 @@
 
     function resetState() {
       stopTimer();
-      snake = [{x:4,y:4}];
+      snake = [{x:6,y:6}];
       baits = [];
       current = null;
       idx = 0;
@@ -296,24 +345,28 @@
       paused = false;
       moving = false;
       autoPath = [];
+      selectedLabel = null;
       questionDeck = shuffle([...QUESTIONS]);
       questionText.textContent = 'Tap Start to begin.';
       progressLine.textContent = 'Question progress will appear here.';
-            feedback('info', 'Tap one bait option on the board.');
+      optionStrip.innerHTML = '';
+      feedback('info', 'Tap one option below the board.');
       pauseBtn.textContent = 'Pause';
       draw();
     }
 
     function startGame() {
       if (!gameStarted) {
-        snake = [{x:4,y:4}];
+        snake = [{x:6,y:6}];
         idx = 0;
         score = 0;
         correct = 0;
+        questionDeck = shuffle([...QUESTIONS]);
         gameStarted = true;
         paused = false;
         moving = false;
         autoPath = [];
+        selectedLabel = null;
         nextQuestion();
       } else if (paused) {
         paused = false;
@@ -337,9 +390,11 @@
       questionText.textContent = current.q;
       progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
       placeBaits();
-            moving = false;
+      renderOptionStrip();
+      moving = false;
       autoPath = [];
-      feedback('info', 'Tap one bait on the board.');
+      selectedLabel = null;
+      feedback('info', 'Tap one option below the board.');
       draw();
     }
 
@@ -365,7 +420,29 @@
     }
 
     function renderOptionStrip() {
-      // removed for smartphone optimization
+      optionStrip.innerHTML = '';
+      baits.forEach(b => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'option-pill';
+        btn.dataset.label = b.label;
+        btn.innerHTML = `<span class="swatch" style="background:${b.color}"></span><span><strong>${b.label}</strong>: ${b.opt}</span>`;
+        btn.addEventListener('click', () => handleOptionTap(b));
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); handleOptionTap(b); }, { passive: false });
+        optionStrip.appendChild(btn);
+      });
+    }
+
+    function setOptionButtonsDisabled(disabled) {
+      optionStrip.querySelectorAll('.option-pill').forEach(btn => {
+        btn.disabled = disabled;
+      });
+    }
+
+    function highlightSelected(label) {
+      optionStrip.querySelectorAll('.option-pill').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.label === label);
+      });
     }
 
     function neighbors(node, blocked) {
@@ -407,19 +484,23 @@
       return [];
     }
 
-    function beginAutoMove(targetBait) {
+    function handleOptionTap(bait) {
       if (!gameStarted || paused || moving) return;
       const start = {x: snake[0].x, y: snake[0].y};
-      const path = findPath(start, targetBait);
+      const path = findPath(start, bait);
       if (!path.length) {
-        feedback('wrong', 'No path available to this bait. Try another one.');
+        feedback('wrong', 'No path available to this option. Try another one.');
         return;
       }
       autoPath = path;
       moving = true;
-      feedback('info', `Moving to ${targetBait.label}...`);
+      selectedLabel = bait.label;
+      highlightSelected(bait.label);
+      setOptionButtonsDisabled(true);
+      feedback('info', `Moving to ${bait.label}...`);
       stopTimer();
       timer = setInterval(stepAutoMove, STEP_SPEED);
+      draw();
     }
 
     function stepAutoMove() {
@@ -427,6 +508,7 @@
       if (!autoPath.length) {
         moving = false;
         stopTimer();
+        setOptionButtonsDisabled(false);
         return;
       }
 
@@ -445,12 +527,15 @@
           correct += 1;
           moving = false;
           stopTimer();
+          setOptionButtonsDisabled(false);
           feedback('correct', 'Correct');
           nextQuestion();
           return;
         } else {
           moving = false;
           stopTimer();
+          setOptionButtonsDisabled(false);
+          highlightSelected(null);
           feedback('wrong', 'Try again');
           draw();
           return;
@@ -467,6 +552,8 @@
       paused = false;
       gameStarted = false;
       stopTimer();
+      setOptionButtonsDisabled(false);
+      highlightSelected(null);
       feedback('wrong', 'Game Over');
       draw();
       setTimeout(() => {
@@ -478,37 +565,7 @@
       const px = x * CELL;
       const py = y * CELL;
       ctx.fillStyle = color;
-      ctx.fillRect(px + 1, py + 1, CELL - 2, CELL - 2);
-    }
-
-    function wrapText(context, text, centerX, startY, maxWidth, lineHeight) {
-      const words = text.split(' ');
-      let line = '';
-      const lines = [];
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line ? line + ' ' + words[n] : words[n];
-        const testWidth = context.measureText(testLine).width;
-        if (testWidth > maxWidth && line) {
-          lines.push(line);
-          line = words[n];
-        } else {
-          line = testLine;
-        }
-      }
-      if (line) lines.push(line);
-      const maxLines = 3;
-      const finalLines = lines.slice(0, maxLines);
-      if (lines.length > maxLines) {
-        finalLines[maxLines - 1] = finalLines[maxLines - 1].slice(0, Math.max(0, finalLines[maxLines - 1].length - 1)) + '…';
-      }
-      const totalHeight = finalLines.length * lineHeight;
-      let y = startY - totalHeight / 2 + lineHeight;
-      context.textAlign = 'center';
-      context.textBaseline = 'middle';
-      for (const l of finalLines) {
-        context.fillText(l, centerX, y);
-        y += lineHeight;
-      }
+      ctx.fillRect(px + 1.5, py + 1.5, CELL - 3, CELL - 3);
     }
 
     function draw() {
@@ -528,30 +585,13 @@
         drawRoundedCell(b.x, b.y, b.color);
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.font = `bold ${Math.max(8, CELL * 0.16)}px Arial`;
-        wrapText(ctx, b.opt, b.x * CELL + CELL / 2, b.y * CELL + CELL * 0.32, CELL - 6, Math.max(8, CELL * 0.18));
+        ctx.font = `bold ${Math.max(14, CELL * 0.32)}px Arial`;
+        ctx.fillText(b.label, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 + 5);
       });
 
       snake.forEach((s, i) => {
         drawRoundedCell(s.x, s.y, i === 0 ? '#38bdf8' : '#60a5fa');
       });
-    }
-
-    function getBaitFromPointer(clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      const x = Math.floor(((clientX - rect.left) / rect.width) * GRID_SIZE);
-      const y = Math.floor(((clientY - rect.top) / rect.height) * GRID_SIZE);
-      return baits.find(b => b.x === x && b.y === y) || null;
-    }
-
-    function handleBoardTap(clientX, clientY) {
-      if (!gameStarted || paused || moving) return;
-      const bait = getBaitFromPointer(clientX, clientY);
-      if (!bait) {
-        feedback('info', 'Please tap directly on A, B, C or D.');
-        return;
-      }
-      beginAutoMove(bait);
     }
 
     startBtn.addEventListener('click', startGame);
@@ -560,20 +600,6 @@
     pauseBtn.addEventListener('touchstart', (e) => { e.preventDefault(); pauseGame(); }, { passive: false });
     resetBtn.addEventListener('click', resetState);
     resetBtn.addEventListener('touchstart', (e) => { e.preventDefault(); resetState(); }, { passive: false });
-
-    canvas.addEventListener('click', (e) => {
-      handleBoardTap(e.clientX, e.clientY);
-    });
-
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const t = e.changedTouches[0];
-      handleBoardTap(t.clientX, t.clientY);
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
 
     window.addEventListener('resize', resize);
     resize();
