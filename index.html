@@ -137,36 +137,15 @@
       pointer-events: none;
     }
 
-    .option-strip {
+    .actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(3, 1fr);
       gap: 6px;
       margin-top: 6px;
     }
 
-    .option-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--panel-2);
-      border-radius: 10px;
-      padding: 6px 8px;
-      min-height: 38px;
-      overflow: hidden;
-    }
-
-    .swatch {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      flex: 0 0 12px;
-    }
-
-    .option-pill span {
-      font-size: 0.74rem;
-      line-height: 1.25;
-      white-space: normal;
-      overflow: hidden;
+    .bait-help {
+      display: none;
     }
 
     .actions {
@@ -226,7 +205,6 @@
         <canvas id="gameCanvas" width="340" height="340"></canvas>
         <div class="tap-hint">Tap A / B / C / D</div>
       </div>
-      <div class="option-strip" id="optionStrip"></div>
       <div class="actions">
         <button class="action-btn start" id="startBtn">Start</button>
         <button class="action-btn pause" id="pauseBtn">Pause</button>
@@ -238,8 +216,8 @@
   </div>
 
   <script>
-    const GRID_SIZE = 10;
-    const STEP_SPEED = 220;
+    const GRID_SIZE = 16;
+    const STEP_SPEED = 260;
     const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
 
     const QUESTIONS = [
@@ -268,8 +246,7 @@
     const questionText = document.getElementById('questionText');
     const feedbackBox = document.getElementById('feedbackBox');
     const progressLine = document.getElementById('progressLine');
-    const optionStrip = document.getElementById('optionStrip');
-    const startBtn = document.getElementById('startBtn');
+        const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const resetBtn = document.getElementById('resetBtn');
 
@@ -322,8 +299,7 @@
       questionDeck = shuffle([...QUESTIONS]);
       questionText.textContent = 'Tap Start to begin.';
       progressLine.textContent = 'Question progress will appear here.';
-      optionStrip.innerHTML = '';
-      feedback('info', 'Tap one bait option on the board.');
+            feedback('info', 'Tap one bait option on the board.');
       pauseBtn.textContent = 'Pause';
       draw();
     }
@@ -361,8 +337,7 @@
       questionText.textContent = current.q;
       progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
       placeBaits();
-      renderOptionStrip();
-      moving = false;
+            moving = false;
       autoPath = [];
       feedback('info', 'Tap one bait on the board.');
       draw();
@@ -390,13 +365,7 @@
     }
 
     function renderOptionStrip() {
-      optionStrip.innerHTML = '';
-      baits.forEach(b => {
-        const div = document.createElement('div');
-        div.className = 'option-pill';
-        div.innerHTML = `<span class="swatch" style="background:${b.color}"></span><span><strong>${b.label}</strong>: ${b.opt}</span>`;
-        optionStrip.appendChild(div);
-      });
+      // removed for smartphone optimization
     }
 
     function neighbors(node, blocked) {
@@ -509,7 +478,37 @@
       const px = x * CELL;
       const py = y * CELL;
       ctx.fillStyle = color;
-      ctx.fillRect(px + 1.5, py + 1.5, CELL - 3, CELL - 3);
+      ctx.fillRect(px + 1, py + 1, CELL - 2, CELL - 2);
+    }
+
+    function wrapText(context, text, centerX, startY, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line ? line + ' ' + words[n] : words[n];
+        const testWidth = context.measureText(testLine).width;
+        if (testWidth > maxWidth && line) {
+          lines.push(line);
+          line = words[n];
+        } else {
+          line = testLine;
+        }
+      }
+      if (line) lines.push(line);
+      const maxLines = 3;
+      const finalLines = lines.slice(0, maxLines);
+      if (lines.length > maxLines) {
+        finalLines[maxLines - 1] = finalLines[maxLines - 1].slice(0, Math.max(0, finalLines[maxLines - 1].length - 1)) + '…';
+      }
+      const totalHeight = finalLines.length * lineHeight;
+      let y = startY - totalHeight / 2 + lineHeight;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      for (const l of finalLines) {
+        context.fillText(l, centerX, y);
+        y += lineHeight;
+      }
     }
 
     function draw() {
@@ -529,8 +528,8 @@
         drawRoundedCell(b.x, b.y, b.color);
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.font = `bold ${Math.max(14, CELL * 0.32)}px Arial`;
-        ctx.fillText(b.label, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 + 5);
+        ctx.font = `bold ${Math.max(8, CELL * 0.16)}px Arial`;
+        wrapText(ctx, b.opt, b.x * CELL + CELL / 2, b.y * CELL + CELL * 0.32, CELL - 6, Math.max(8, CELL * 0.18));
       });
 
       snake.forEach((s, i) => {
