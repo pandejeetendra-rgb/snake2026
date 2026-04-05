@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Cyber Snake: Types of Cyber Crime</title>
+  <title>Cyber Snake: Smartphone Version</title>
   <style>
     :root {
       --panel: #111827;
@@ -14,10 +14,10 @@
       --danger: #dc2626;
       --info: #2563eb;
       --button: #334155;
-      --bait1: #16a34a; /* A */
-      --bait2: #dc2626; /* B */
-      --bait3: #2563eb; /* C */
-      --bait4: #d97706; /* D */
+      --bait1: #16a34a;
+      --bait2: #dc2626;
+      --bait3: #2563eb;
+      --bait4: #d97706;
     }
 
     * { box-sizing: border-box; }
@@ -27,78 +27,88 @@
       padding: 0;
       width: 100%;
       min-height: 100%;
-      overscroll-behavior: none;
-      touch-action: manipulation;
       background: linear-gradient(180deg, #071226, #0f172a);
       color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
+      overscroll-behavior: none;
     }
 
     body {
       display: flex;
       justify-content: center;
-      padding: 8px;
+      padding: 6px;
     }
 
     .app {
       width: 100%;
-      max-width: 460px;
+      max-width: 430px;
       display: grid;
-      gap: 8px;
+      gap: 6px;
       align-content: start;
     }
 
     .card {
       background: rgba(17, 24, 39, 0.96);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     }
 
     .title {
-      font-size: 1.05rem;
+      margin: 0 0 4px 0;
+      font-size: 1rem;
       font-weight: 700;
-      margin-bottom: 4px;
     }
 
     .subtitle, .small {
-      font-size: 0.8rem;
+      margin: 0;
+      font-size: 0.78rem;
       color: var(--muted);
-      line-height: 1.35;
-    }
-
-    .question-card {
-      display: grid;
-      gap: 6px;
+      line-height: 1.3;
     }
 
     .question-label {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.04em;
+      margin-bottom: 4px;
     }
 
     .question-text {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
-      line-height: 1.35;
-      min-height: 2.6em;
+      line-height: 1.3;
+      min-height: 2.2em;
+      margin-bottom: 6px;
     }
 
     .progress-line {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--muted);
+      margin-bottom: 6px;
     }
+
+    .feedback-box {
+      min-height: 34px;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      line-height: 1.3;
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .feedback-box.correct { border-left: 4px solid #22c55e; }
+    .feedback-box.wrong { border-left: 4px solid #ef4444; }
+    .feedback-box.info { border-left: 4px solid #2563eb; }
 
     .canvas-wrap {
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
     canvas {
@@ -110,51 +120,73 @@
       height: auto;
       display: block;
       touch-action: none;
-      -webkit-user-select: none;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .feedback-box {
-      min-height: 38px;
-      border-radius: 10px;
-      padding: 9px 10px;
-      font-size: 0.82rem;
-      line-height: 1.35;
+    .tap-hint {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 0.68rem;
+      padding: 4px 6px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .option-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .option-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       background: var(--panel-2);
-      color: var(--text);
+      border-radius: 10px;
+      padding: 6px 8px;
+      min-height: 32px;
+      overflow: hidden;
     }
 
-    .feedback-box.correct { border-left: 4px solid #22c55e; }
-    .feedback-box.wrong { border-left: 4px solid #ef4444; }
-    .feedback-box.info { border-left: 4px solid #2563eb; }
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex: 0 0 12px;
+    }
+
+    .option-pill span {
+      font-size: 0.74rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .actions {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
+      margin-top: 6px;
     }
 
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 6px;
-      max-width: 210px;
-      margin: 0 auto;
-      user-select: none;
-    }
-
-    .ctrl-empty { visibility: hidden; }
-
-    .ctrl-btn, .action-btn {
+    .action-btn {
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 10px 8px;
-      font-size: 0.92rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: white;
       background: var(--button);
       cursor: pointer;
-      min-height: 44px;
+      min-height: 42px;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
@@ -165,13 +197,14 @@
 
     .footer-note {
       text-align: center;
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--muted);
-      padding-bottom: 4px;
+      padding-bottom: 2px;
     }
 
     @media (max-width: 380px) {
-      .question-text { font-size: 0.9rem; }
+      .option-strip { grid-template-columns: 1fr; }
+      .question-text { font-size: 0.88rem; }
     }
   </style>
 </head>
@@ -179,23 +212,22 @@
   <div class="app">
     <section class="card">
       <h1 class="title">Cyber Snake</h1>
-      <p class="subtitle">Guide the snake to the correct coloured bait. Short options are shown directly on the board.</p>
+      <p class="subtitle">Smartphone version. Tap on the board to change snake direction. Wrap mode is always on.</p>
     </section>
 
-    <section class="card question-card">
+    <section class="card">
       <div class="question-label">Question</div>
       <div class="question-text" id="questionText">Tap Start to begin.</div>
-      <div class="progress-line" id="progressLine"></div>
-      <div class="feedback-box info" id="feedbackBox">Select the correct bait.</div>
+      <div class="progress-line" id="progressLine">Question progress will appear here.</div>
+      <div class="feedback-box info" id="feedbackBox">Tap the board above, below, left, or right to control the snake.</div>
     </section>
 
     <section class="card">
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="360" height="360"></canvas>
+        <canvas id="gameCanvas" width="340" height="340"></canvas>
+        <div class="tap-hint">Tap board to turn</div>
       </div>
-    </section>
-
-    <section class="card">
+      <div class="option-strip" id="optionStrip"></div>
       <div class="actions">
         <button class="action-btn start" id="startBtn">Start</button>
         <button class="action-btn pause" id="pauseBtn">Pause</button>
@@ -203,18 +235,7 @@
       </div>
     </section>
 
-    <section class="card">
-      <div class="controls-grid">
-        <div class="ctrl-empty">.</div>
-        <button class="ctrl-btn" data-dir="up">▲</button>
-        <div class="ctrl-empty">.</div>
-        <button class="ctrl-btn" data-dir="left">◀</button>
-        <button class="ctrl-btn" data-dir="down">▼</button>
-        <button class="ctrl-btn" data-dir="right">▶</button>
-      </div>
-    </section>
-
-    <p class="footer-note">Score is shown at the end.</p>
+    <p class="footer-note">Score is shown at the end only.</p>
   </div>
 
   <script>
@@ -240,9 +261,7 @@
       {q:'Keylogger?', o:['Record','Delete','Encrypt','Scan'], a:'Record'},
       {q:'Trojan?', o:['Hidden','Fast','Clean','Block'], a:'Hidden'},
       {q:'Worm?', o:['Spread','Stop','Scan','Fix'], a:'Spread'},
-      {q:'Virus?', o:['Infect','Clean','Block','Delete'], a:'Infect'},
-      {q:'Firewall?', o:['Filter','Hack','Copy','Spam'], a:'Filter'},
-      {q:'Encryption?', o:['Secure','Delete','Track','Block'], a:'Secure'}
+      {q:'Virus?', o:['Infect','Clean','Block','Delete'], a:'Infect'}
     ];
 
     const canvas = document.getElementById('gameCanvas');
@@ -250,65 +269,165 @@
     const questionText = document.getElementById('questionText');
     const feedbackBox = document.getElementById('feedbackBox');
     const progressLine = document.getElementById('progressLine');
+    const optionStrip = document.getElementById('optionStrip');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
 
     let CELL;
-    let snake, dir, nextDir, baits, current, idx, running, timer, score=0, correct=0;
+    let snake = [];
+    let dir = {x:1,y:0};
+    let nextDir = {x:1,y:0};
+    let baits = [];
+    let current = null;
+    let idx = 0;
+    let running = false;
+    let paused = false;
+    let timer = null;
+    let score = 0;
+    let correct = 0;
+    let gameStarted = false;
 
-    function resize(){
-      const size = Math.min(window.innerWidth-20,420);
-      canvas.width=size; canvas.height=size;
-      CELL=size/GRID_SIZE;
+    function resize() {
+      const maxWidth = Math.min(window.innerWidth - 20, 420);
+      const size = Math.max(280, maxWidth - 4);
+      canvas.width = size;
+      canvas.height = size;
+      CELL = size / GRID_SIZE;
       draw();
     }
 
-    function start(){
-      reset(); running=true;
-      nextQ();
-      timer=setInterval(step,SPEED);
+    function stopTimer() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
     }
 
-    function reset(){
-      snake=[{x:4,y:4}]; dir={x:1,y:0}; nextDir={x:1,y:0};
-      idx=0; score=0; correct=0;
+    function feedback(type, text) {
+      feedbackBox.className = `feedback-box ${type}`;
+      feedbackBox.textContent = text;
     }
 
-    function nextQ(){
-      current=QUESTIONS[idx++ % QUESTIONS.length];
-      questionText.textContent=current.q;
-      progressLine.textContent=`Q ${idx}`;
+    function resetState() {
+      stopTimer();
+      snake = [{x:4,y:4}];
+      dir = {x:1,y:0};
+      nextDir = {x:1,y:0};
+      baits = [];
+      current = null;
+      idx = 0;
+      running = false;
+      paused = false;
+      score = 0;
+      correct = 0;
+      gameStarted = false;
+      questionText.textContent = 'Tap Start to begin.';
+      progressLine.textContent = 'Question progress will appear here.';
+      optionStrip.innerHTML = '';
+      feedback('info', 'Tap the board above, below, left, or right to control the snake.');
+      pauseBtn.textContent = 'Pause';
+      draw();
+    }
+
+    function startGame() {
+      if (!gameStarted) {
+        snake = [{x:4,y:4}];
+        dir = {x:1,y:0};
+        nextDir = {x:1,y:0};
+        idx = 0;
+        score = 0;
+        correct = 0;
+        gameStarted = true;
+        nextQuestion();
+      }
+      running = true;
+      paused = false;
+      pauseBtn.textContent = 'Pause';
+      stopTimer();
+      timer = setInterval(step, SPEED);
+      draw();
+    }
+
+    function pauseGame() {
+      if (!gameStarted) return;
+      paused = !paused;
+      running = !paused;
+      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+    }
+
+    function nextQuestion() {
+      current = QUESTIONS[idx % QUESTIONS.length];
+      idx += 1;
+      questionText.textContent = current.q;
+      progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
       placeBaits();
+      renderOptionStrip();
+      feedback('info', 'Move the snake to the correct coloured bait.');
+      draw();
     }
 
-    function placeBaits(){
-      baits=[];
-      const used=new Set();
-      current.o.forEach((opt,i)=>{
-        let x,y;
-        do{ x=Math.floor(Math.random()*GRID_SIZE); y=Math.floor(Math.random()*GRID_SIZE);}while(used.has(x+','+y));
-        used.add(x+','+y);
-        baits.push({x,y,opt,correct:opt===current.a,color:BAIT_COLORS[i],label:String.fromCharCode(65+i)});
+    function placeBaits() {
+      baits = [];
+      const used = new Set(snake.map(s => `${s.x},${s.y}`));
+      current.o.forEach((opt, i) => {
+        let x, y, key;
+        do {
+          x = Math.floor(Math.random() * GRID_SIZE);
+          y = Math.floor(Math.random() * GRID_SIZE);
+          key = `${x},${y}`;
+        } while (used.has(key));
+        used.add(key);
+        baits.push({
+          x, y,
+          opt,
+          correct: opt === current.a,
+          color: BAIT_COLORS[i],
+          label: String.fromCharCode(65 + i)
+        });
       });
     }
 
-    function step(){
-      dir=nextDir;
-      let head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
-      if(head.x<0) head.x=GRID_SIZE-1;
-      if(head.x>=GRID_SIZE) head.x=0;
-      if(head.y<0) head.y=GRID_SIZE-1;
-      if(head.y>=GRID_SIZE) head.y=0;
+    function renderOptionStrip() {
+      optionStrip.innerHTML = '';
+      baits.forEach(b => {
+        const div = document.createElement('div');
+        div.className = 'option-pill';
+        div.innerHTML = `<span class="swatch" style="background:${b.color}"></span><span><strong>${b.label}</strong>: ${b.opt}</span>`;
+        optionStrip.appendChild(div);
+      });
+    }
 
-      const hit=baits.find(b=>b.x===head.x && b.y===head.y);
-      if(hit){
-        if(hit.correct){
+    function step() {
+      if (!running || paused || !gameStarted) return;
+
+      dir = nextDir;
+      const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+
+      if (head.x < 0) head.x = GRID_SIZE - 1;
+      if (head.x >= GRID_SIZE) head.x = 0;
+      if (head.y < 0) head.y = GRID_SIZE - 1;
+      if (head.y >= GRID_SIZE) head.y = 0;
+
+      if (snake.some(s => s.x === head.x && s.y === head.y)) {
+        endGame();
+        return;
+      }
+
+      const hit = baits.find(b => b.x === head.x && b.y === head.y);
+      if (hit) {
+        if (hit.correct) {
           snake.unshift(head);
-          score+=10; correct++;
-          feedback('correct','Correct');
-          nextQ();
-        }else{
-          feedback('wrong','Try again');
+          score += 10;
+          correct += 1;
+          feedback('correct', 'Correct');
+          nextQuestion();
+          return;
+        } else {
+          feedback('wrong', 'Try again');
+          draw();
+          return;
         }
-        draw(); return;
       }
 
       snake.unshift(head);
@@ -316,51 +435,97 @@
       draw();
     }
 
-    function feedback(type,text){
-      feedbackBox.className='feedback-box '+type;
-      feedbackBox.textContent=text;
+    function endGame() {
+      running = false;
+      paused = false;
+      gameStarted = false;
+      stopTimer();
+      feedback('wrong', 'Game Over');
+      draw();
+      setTimeout(() => {
+        alert(`Game Over\nFinal Score: ${score}\nCorrect Answers: ${correct}\nFinal Length: ${snake.length}`);
+      }, 120);
     }
 
-    function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+    function drawRoundedCell(x, y, color) {
+      const px = x * CELL;
+      const py = y * CELL;
+      ctx.fillStyle = color;
+      ctx.fillRect(px + 1.5, py + 1.5, CELL - 3, CELL - 3);
+    }
 
-      baits&&baits.forEach(b=>{
-        ctx.fillStyle=b.color;
-        ctx.fillRect(b.x*CELL,b.y*CELL,CELL,CELL);
+    function draw() {
+      if (!ctx || !CELL) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle='white';
-        ctx.font=`bold ${CELL*0.3}px Arial`;
-        ctx.textAlign='center';
-        ctx.fillText(b.label,b.x*CELL+CELL/2,b.y*CELL+CELL/2-4);
+      for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+          ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+          ctx.strokeRect(i * CELL, j * CELL, CELL, CELL);
+        }
+      }
 
-        ctx.font=`${CELL*0.22}px Arial`;
-        ctx.fillText(b.opt,b.x*CELL+CELL/2,b.y*CELL+CELL/2+10);
+      baits.forEach(b => {
+        drawRoundedCell(b.x, b.y, b.color);
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.font = `bold ${Math.max(11, CELL * 0.28)}px Arial`;
+        ctx.fillText(b.label, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 - 3);
+        ctx.font = `${Math.max(8, CELL * 0.18)}px Arial`;
+        ctx.fillText(b.opt, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 + 10);
       });
 
-      snake&&snake.forEach((s,i)=>{
-        ctx.fillStyle=i===0?'#38bdf8':'#60a5fa';
-        ctx.fillRect(s.x*CELL,s.y*CELL,CELL,CELL);
+      snake.forEach((s, i) => {
+        drawRoundedCell(s.x, s.y, i === 0 ? '#38bdf8' : '#60a5fa');
       });
     }
 
-    function change(d){
-      const m={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
-      nextDir=m[d];
+    function setDirectionFromTap(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const dx = x - centerX;
+      const dy = y - centerY;
+
+      let nd;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        nd = dx > 0 ? {x:1,y:0} : {x:-1,y:0};
+      } else {
+        nd = dy > 0 ? {x:0,y:1} : {x:0,y:-1};
+      }
+
+      if (snake.length > 1 && nd.x === -dir.x && nd.y === -dir.y) return;
+      nextDir = nd;
     }
 
-    document.querySelectorAll('.ctrl-btn').forEach(b=>{
-      b.onclick=()=>change(b.dataset.dir);
-      b.ontouchstart=e=>{e.preventDefault();change(b.dataset.dir)};
+    startBtn.addEventListener('click', startGame);
+    startBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startGame(); }, { passive: false });
+    pauseBtn.addEventListener('click', pauseGame);
+    pauseBtn.addEventListener('touchstart', (e) => { e.preventDefault(); pauseGame(); }, { passive: false });
+    resetBtn.addEventListener('click', resetState);
+    resetBtn.addEventListener('touchstart', (e) => { e.preventDefault(); resetState(); }, { passive: false });
+
+    canvas.addEventListener('click', (e) => {
+      setDirectionFromTap(e.clientX, e.clientY);
     });
 
-    document.getElementById('startBtn').onclick=start;
-    document.getElementById('resetBtn').onclick=reset;
-    document.getElementById('pauseBtn').onclick=()=>{running=!running};
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const t = e.changedTouches[0];
+      setDirectionFromTap(t.clientX, t.clientY);
+    }, { passive: false });
 
-    canvas.ontouchstart=e=>{e.preventDefault();};
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
-    window.addEventListener('resize',resize);
+    window.addEventListener('resize', resize);
     resize();
+    resetState();
   </script>
 </body>
 </html>
