@@ -258,6 +258,7 @@
     const GRID_SIZE = 16;
     const STEP_SPEED = 220;
     const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
+    const QUESTIONS_PER_GAME = 10;
 
     const QUESTIONS = [
       {q:'What is cyber stalking?', o:['A person is harassed online','Network speed is monitored','Software is copied illegally','A website is blocked'], a:'A person is harassed online'},
@@ -275,7 +276,40 @@
       {q:'Ransomware is used to:', o:['Demand money from the victim','Share free software','Delete search history','Hide desktop icons'], a:'Demand money from the victim'},
       {q:'Identity theft means:', o:['Pretending to be another person','Scanning a hard disk','Blocking an email account','Fixing system files'], a:'Pretending to be another person'},
       {q:'A keylogger is used to:', o:['Record key presses','Delete text files','Encrypt passwords safely','Scan internet speed'], a:'Record key presses'},
-      {q:'A Trojan horse is:', o:['A hidden harmful program','A fast antivirus tool','A safe browser plug-in','A firewall setting'], a:'A hidden harmful program'}
+      {q:'A Trojan horse is:', o:['A hidden harmful program','A fast antivirus tool','A safe browser plug-in','A firewall setting'], a:'A hidden harmful program'},
+      {q:'A computer worm can:', o:['Spread automatically','Improve system speed','Block advertisements','Recover deleted files'], a:'Spread automatically'},
+      {q:'A virus usually needs:', o:['User action to run','A printer to spread','A firewall to grow','A scanner to start'], a:'User action to run'},
+      {q:'Spyware is used to:', o:['Secretly collect information','Increase battery life','Clean infected files','Protect passwords'], a:'Secretly collect information'},
+      {q:'Adware mainly shows:', o:['Unwanted advertisements','Security warnings only','System passwords','Backup reports'], a:'Unwanted advertisements'},
+      {q:'Browser hijacking does what?', o:['Changes browser settings','Repairs web pages','Encrypts browser cache','Deletes bookmarks'], a:'Changes browser settings'},
+      {q:'Scareware tries to:', o:['Frighten users into paying','Increase computer memory','Block search engines','Improve antivirus'], a:'Frighten users into paying'},
+      {q:'Cyber terrorism targets:', o:['Political or social systems','Only home printers','Only games and apps','Only offline files'], a:'Political or social systems'},
+      {q:'Forgery in cyber crime means:', o:['Creating fake documents','Improving digital signatures','Backing up records','Repairing a website'], a:'Creating fake documents'},
+      {q:'IPR crime includes:', o:['Illegal movie or software download','Safe password creation','Network monitoring','Cloud backup only'], a:'Illegal movie or software download'},
+      {q:'A white hat hacker is:', o:['An ethical hacker','A ransomware attacker','A spammer','A website vandal'], a:'An ethical hacker'},
+      {q:'A black hat hacker is:', o:['A malicious hacker','A security auditor','A help desk worker','A network trainer'], a:'A malicious hacker'},
+      {q:'A grey hat hacker usually:', o:['Finds flaws and asks fee','Only deletes files','Spreads worms','Builds antivirus'], a:'Finds flaws and asks fee'},
+      {q:'A blue hat hacker is used to:', o:['Test a system before launch','Sell domain names','Send phishing mail','Create pop-up ads'], a:'Test a system before launch'},
+      {q:'Computer vandalism means:', o:['Damaging computing resources','Improving server speed','Cleaning temporary files','Organizing folders'], a:'Damaging computing resources'},
+      {q:'Cross-site scripting involves:', o:['Injecting malicious script','Deleting browser history','Blocking a router','Formatting a hard disk'], a:'Injecting malicious script'},
+      {q:'Web jacking means:', o:['Taking control of a website','Buying legal domains','Improving web design','Compressing a webpage'], a:'Taking control of a website'},
+      {q:'Internet time theft means:', o:['Using someone else’s ISP access','Downloading large videos','Blocking Wi-Fi signals','Improving broadband'], a:'Using someone else’s ISP access'},
+      {q:'Child pornography crime involves:', o:['Illegal sexual images of minors','Movie piracy only','Website defacement','Email spoofing'], a:'Illegal sexual images of minors'},
+      {q:'Cyber crime is often done for:', o:['Money, revenge or fun','Only academic research','Only system testing','Only free access'], a:'Money, revenge or fun'},
+      {q:'An insider attack is done by:', o:['A person with authorized access','An unknown outsider only','An ISP technician only','A search engine bot'], a:'A person with authorized access'},
+      {q:'An external attack is done by:', o:['Someone outside the organization','Only the HR department','Only internal auditors','Only database admins'], a:'Someone outside the organization'},
+      {q:'An unstructured attack is usually by:', o:['An amateur attacker','A trained cyber unit','A legal investigator','A certified auditor'], a:'An amateur attacker'},
+      {q:'A structured attack is usually by:', o:['A skilled attacker with clear motive','A child learning computers','A casual gamer','A simple office user'], a:'A skilled attacker with clear motive'},
+      {q:'Adware usually does what?', o:['Shows forced ads','Encrypts hard drives','Deletes backups','Creates strong passwords'], a:'Shows forced ads'},
+      {q:'Spyware often tries to:', o:['Gather user information','Speed up browsers','Protect cookies','Remove malware'], a:'Gather user information'},
+      {q:'A botnet is:', o:['A group of infected devices','A backup network only','A legal firewall','A safe email tool'], a:'A group of infected devices'},
+      {q:'Vishing uses which medium?', o:['Voice call','Printed letter','USB drive','Firewall log'], a:'Voice call'},
+      {q:'Smishing uses which medium?', o:['SMS text','Video file','Printer alert','BIOS screen'], a:'SMS text'},
+      {q:'Computer crime became more harmful after:', o:['Public internet expansion','Better printers arrived','Cables got shorter','Hard disks became cheaper'], a:'Public internet expansion'},
+      {q:'An IDS helps to:', o:['Detect suspicious activity','Increase monitor size','Store passwords','Format a disk'], a:'Detect suspicious activity'},
+      {q:'Revenge as a cyber crime motive means:', o:['Trying to harm others digitally','Trying to upgrade software','Improving internet plans','Reducing website traffic cost'], a:'Trying to harm others digitally'},
+      {q:'Recognition as a motive means:', o:['Wanting status for hacking','Wanting new hardware','Buying legal software','Watching online classes'], a:'Wanting status for hacking'},
+      {q:'Anonymity in cyber space may:', o:['Encourage cyber crime','Stop all phishing','Repair damaged files','Block websites safely'], a:'Encourage cyber crime'}
     ];
 
     const canvas = document.getElementById('gameCanvas');
@@ -346,7 +380,7 @@
       moving = false;
       autoPath = [];
       selectedLabel = null;
-      questionDeck = shuffle([...QUESTIONS]);
+      questionDeck = shuffle([...QUESTIONS]).slice(0, QUESTIONS_PER_GAME);
       questionText.textContent = 'Tap Start to begin.';
       progressLine.textContent = 'Question progress will appear here.';
       optionStrip.innerHTML = '';
@@ -361,7 +395,7 @@
         idx = 0;
         score = 0;
         correct = 0;
-        questionDeck = shuffle([...QUESTIONS]);
+        questionDeck = shuffle([...QUESTIONS]).slice(0, QUESTIONS_PER_GAME);
         gameStarted = true;
         paused = false;
         moving = false;
@@ -383,12 +417,13 @@
 
     function nextQuestion() {
       if (!questionDeck.length) {
-        questionDeck = shuffle([...QUESTIONS]);
+        endGame();
+        return;
       }
       current = questionDeck.shift();
       idx += 1;
       questionText.textContent = current.q;
-      progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
+      progressLine.textContent = `Question: ${idx}/${QUESTIONS_PER_GAME}   Length: ${snake.length}   Correct: ${correct}`;
       placeBaits();
       renderOptionStrip();
       moving = false;
@@ -401,7 +436,8 @@
     function placeBaits() {
       baits = [];
       const used = new Set(snake.map(s => `${s.x},${s.y}`));
-      current.o.forEach((opt, i) => {
+      const shuffledOptions = shuffle(current.o.map(opt => ({ opt, correct: opt === current.a })));
+      shuffledOptions.forEach((item, i) => {
         let x, y, key;
         do {
           x = Math.floor(Math.random() * GRID_SIZE);
@@ -411,8 +447,8 @@
         used.add(key);
         baits.push({
           x, y,
-          opt,
-          correct: opt === current.a,
+          opt: item.opt,
+          correct: item.correct,
           color: BAIT_COLORS[i],
           label: String.fromCharCode(65 + i)
         });
@@ -557,7 +593,7 @@
       feedback('wrong', 'Game Over');
       draw();
       setTimeout(() => {
-        alert(`Game Over\nFinal Score: ${score}\nCorrect Answers: ${correct}\nFinal Length: ${snake.length}`);
+        alert(`Game Over\nFinal Score: ${score}\nCorrect Answers: ${correct}/${QUESTIONS_PER_GAME}\nFinal Length: ${snake.length}`);
       }, 120);
     }
 
