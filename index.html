@@ -14,10 +14,10 @@
       --danger: #dc2626;
       --info: #2563eb;
       --button: #334155;
-      --bait1: #16a34a;
-      --bait2: #dc2626;
-      --bait3: #2563eb;
-      --bait4: #d97706;
+      --bait1: #16a34a; /* A */
+      --bait2: #dc2626; /* B */
+      --bait3: #2563eb; /* C */
+      --bait4: #d97706; /* D */
     }
 
     * { box-sizing: border-box; }
@@ -55,8 +55,6 @@
       padding: 10px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
     }
-
-    h1, h2, p { margin: 0; }
 
     .title {
       font-size: 1.05rem;
@@ -116,38 +114,6 @@
       user-select: none;
     }
 
-    .option-strip {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-    }
-
-    .option-pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--panel-2);
-      border-radius: 10px;
-      padding: 7px 8px;
-      min-height: 34px;
-      overflow: hidden;
-    }
-
-    .swatch {
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      flex: 0 0 14px;
-    }
-
-    .option-pill span {
-      font-size: 0.76rem;
-      line-height: 1.2;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
     .feedback-box {
       min-height: 38px;
       border-radius: 10px;
@@ -166,12 +132,6 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-    }
-
-    .button-row {
-      margin-top: 8px;
-      display: flex;
-      justify-content: center;
     }
 
     .controls-grid {
@@ -202,26 +162,6 @@
     .action-btn.start { background: var(--success); }
     .action-btn.pause { background: var(--info); }
     .action-btn.reset { background: var(--danger); }
-    .action-btn.secondary { background: #475569; }
-
-    .hidden-on-play {
-      display: block;
-    }
-
-    .file-row {
-      display: grid;
-      gap: 6px;
-    }
-
-    input[type="file"] {
-      width: 100%;
-      color: var(--muted);
-      background: var(--panel-2);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 8px;
-      font-size: 0.82rem;
-    }
 
     .footer-note {
       text-align: center;
@@ -231,39 +171,28 @@
     }
 
     @media (max-width: 380px) {
-      body { padding: 6px; }
-      .app { gap: 6px; }
-      .card { padding: 8px; }
       .question-text { font-size: 0.9rem; }
-      .option-strip { grid-template-columns: 1fr; }
-      .actions { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <section class="card hidden-on-play" id="introCard">
+    <section class="card">
       <h1 class="title">Cyber Snake</h1>
-      <p class="subtitle">Single-screen learning game on <strong>Types of Cyber Crime</strong>. Guide the snake to the correct coloured bait. Correct choice increases snake length. Wrong choice has no effect.</p>
+      <p class="subtitle">Guide the snake to the correct coloured bait. Short options are shown directly on the board.</p>
     </section>
 
     <section class="card question-card">
-      <div class="question-label">Current Question</div>
+      <div class="question-label">Question</div>
       <div class="question-text" id="questionText">Tap Start to begin.</div>
-      <div class="progress-line" id="progressLine">Question progress will appear here.</div>
-      <div class="feedback-box info" id="feedbackBox">Move the snake toward the bait that matches the correct answer.</div>
+      <div class="progress-line" id="progressLine"></div>
+      <div class="feedback-box info" id="feedbackBox">Select the correct bait.</div>
     </section>
 
     <section class="card">
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="360" height="360" aria-label="Snake game board"></canvas>
+        <canvas id="gameCanvas" width="360" height="360"></canvas>
       </div>
-    </section>
-
-    <section class="card question-card">
-      <div class="question-label">Options</div>
-      <div class="option-strip" id="optionStrip"></div>
-      <p class="small">Options stay visible during play so the learner can recall them without breaking game flow.</p>
     </section>
 
     <section class="card">
@@ -271,9 +200,6 @@
         <button class="action-btn start" id="startBtn">Start</button>
         <button class="action-btn pause" id="pauseBtn">Pause</button>
         <button class="action-btn reset" id="resetBtn">Restart</button>
-      </div>
-      <div class="button-row">
-        <button class="action-btn secondary" id="wrapToggleBtn">Wrap: ON</button>
       </div>
     </section>
 
@@ -288,452 +214,153 @@
       </div>
     </section>
 
-    <section class="card file-row hidden-on-play" id="jsonCard">
-      <h2 class="title" style="font-size:0.95rem;">Load your own JSON questions</h2>
-      <p class="small">Each question must have exactly 4 options. Use short option text for the best smartphone experience.</p>
-      <input type="file" id="jsonFileInput" accept="application/json" />
-      <p class="small" id="fileStatus">Using built-in question bank.</p>
-    </section>
-
-    <p class="footer-note">Score is shown at the end to keep the play screen clean.</p>
+    <p class="footer-note">Score is shown at the end.</p>
   </div>
 
   <script>
     const GRID_SIZE = 10;
-    const BASE_SPEED_MS = 280;
-    const CORRECT_BONUS = 10;
-    let ENABLE_WRAP = true;
+    const SPEED = 280;
+    const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
 
-    const BAIT_COLORS = ['#16a34a', '#dc2626', '#2563eb', '#d97706'];
-
-    const BUILT_IN_QUESTIONS = [
-      { id: 'Q1', question: 'What is cyber stalking?', options: ['Monitoring traffic', 'Harassing online', 'Stealing software', 'Blocking a site'], correctAnswer: 'Harassing online', explanation: 'Cyber stalking means threatening or harassing a person using online tools.' },
-      { id: 'Q2', question: 'Phishing is mainly used to:', options: ['Improve speed', 'Steal information', 'Fix malware', 'Encrypt files'], correctAnswer: 'Steal information', explanation: 'Phishing tricks users into sharing sensitive information.' },
-      { id: 'Q3', question: 'Software piracy means:', options: ['Legal sharing', 'Illegal copying', 'Installing antivirus', 'Encrypting data'], correctAnswer: 'Illegal copying', explanation: 'Software piracy is unauthorized copying or distribution of software.' },
-      { id: 'Q4', question: 'Cyber terrorism is:', options: ['Shopping fraud', 'Political digital attack', 'Gaming addiction', 'Bulk email'], correctAnswer: 'Political digital attack', explanation: 'Cyber terrorism uses digital systems to attack or intimidate for political or social aims.' },
-      { id: 'Q5', question: 'Hacking means:', options: ['Security testing only', 'Unauthorized access', 'Sending emails', 'Deleting cookies'], correctAnswer: 'Unauthorized access', explanation: 'Hacking means accessing a system beyond authorization.' },
-      { id: 'Q6', question: 'Spamming refers to:', options: ['Bulk unwanted messages', 'Encrypting emails', 'Blocking websites', 'Repairing systems'], correctAnswer: 'Bulk unwanted messages', explanation: 'Spamming means sending large numbers of unwanted messages.' },
-      { id: 'Q7', question: 'DoS attack aims to:', options: ['Improve network', 'Overload a system', 'Secure data', 'Back up files'], correctAnswer: 'Overload a system', explanation: 'A Denial of Service attack floods a service so users cannot access it.' },
-      { id: 'Q8', question: 'Salami attack uses:', options: ['Large theft once', 'Small hidden thefts', 'Email hacking', 'Password cracking'], correctAnswer: 'Small hidden thefts', explanation: 'A salami attack uses many tiny changes that often go unnoticed.' },
-      { id: 'Q9', question: 'Data diddling means:', options: ['Deleting files', 'Changing data early', 'Encrypting data', 'Sending spam'], correctAnswer: 'Changing data early', explanation: 'Data diddling means changing data before it is processed.' },
-      { id: 'Q10', question: 'Email spoofing is:', options: ['Blocking emails', 'Fake sender identity', 'Deleting emails', 'Encrypting emails'], correctAnswer: 'Fake sender identity', explanation: 'Email spoofing makes a message look like it came from another source.' },
-      { id: 'Q11', question: 'Online auction fraud means:', options: ['Safe selling', 'Fake sale or no delivery', 'Better security', 'Encrypted payment'], correctAnswer: 'Fake sale or no delivery', explanation: 'Users may pay for a product that never arrives.' },
-      { id: 'Q12', question: 'Cyber squatting means:', options: ['Blocking sites', 'Domain resale', 'Hacking servers', 'Sending spam'], correctAnswer: 'Domain resale', explanation: 'Cyber squatting means registering domains and reselling them at a higher price.' }
+    const QUESTIONS = [
+      {q:'Cyber stalking?', o:['Harass','Track','Copy','Block'], a:'Harass'},
+      {q:'Phishing use?', o:['Steal','Speed','Fix','Encrypt'], a:'Steal'},
+      {q:'Piracy?', o:['Legal','Copy','Install','Encrypt'], a:'Copy'},
+      {q:'Hacking?', o:['Access','Mail','Delete','Browse'], a:'Access'},
+      {q:'Spamming?', o:['Bulk msg','Encrypt','Block','Repair'], a:'Bulk msg'},
+      {q:'DoS attack?', o:['Crash','Improve','Secure','Backup'], a:'Crash'},
+      {q:'Salami attack?', o:['Small cuts','Big theft','Mail','Hack'], a:'Small cuts'},
+      {q:'Data diddling?', o:['Change','Delete','Encrypt','Spam'], a:'Change'},
+      {q:'Spoofing?', o:['Fake id','Block','Delete','Encrypt'], a:'Fake id'},
+      {q:'Auction fraud?', o:['Fake sale','Safe','Secure','Fast'], a:'Fake sale'},
+      {q:'Cyber squatting?', o:['Domain','Hack','Spam','Block'], a:'Domain'},
+      {q:'Malware?', o:['Harm','Help','Fix','Scan'], a:'Harm'},
+      {q:'Ransomware?', o:['Demand','Share','Delete','Hide'], a:'Demand'},
+      {q:'Identity theft?', o:['Impersonate','Scan','Block','Fix'], a:'Impersonate'},
+      {q:'Keylogger?', o:['Record','Delete','Encrypt','Scan'], a:'Record'},
+      {q:'Trojan?', o:['Hidden','Fast','Clean','Block'], a:'Hidden'},
+      {q:'Worm?', o:['Spread','Stop','Scan','Fix'], a:'Spread'},
+      {q:'Virus?', o:['Infect','Clean','Block','Delete'], a:'Infect'},
+      {q:'Firewall?', o:['Filter','Hack','Copy','Spam'], a:'Filter'},
+      {q:'Encryption?', o:['Secure','Delete','Track','Block'], a:'Secure'}
     ];
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     const questionText = document.getElementById('questionText');
-    const progressLine = document.getElementById('progressLine');
-    const optionStrip = document.getElementById('optionStrip');
     const feedbackBox = document.getElementById('feedbackBox');
-    const startBtn = document.getElementById('startBtn');
-    const pauseBtn = document.getElementById('pauseBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const wrapToggleBtn = document.getElementById('wrapToggleBtn');
-    const ctrlButtons = document.querySelectorAll('.ctrl-btn');
-    const jsonFileInput = document.getElementById('jsonFileInput');
-    const fileStatus = document.getElementById('fileStatus');
-    const introCard = document.getElementById('introCard');
-    const jsonCard = document.getElementById('jsonCard');
+    const progressLine = document.getElementById('progressLine');
 
-    let CELL = canvas.width / GRID_SIZE;
-    let snake;
-    let direction;
-    let nextDirection;
-    let finalScore;
-    let correctAnswers;
-    let askedQuestions;
-    let running;
-    let paused;
-    let gameOver;
-    let started = false;
-    let stepTimer;
-    let questionPool = [];
-    let usedQuestionIds = new Set();
-    let currentQuestion;
-    let baits = [];
+    let CELL;
+    let snake, dir, nextDir, baits, current, idx, running, timer, score=0, correct=0;
 
-    function shuffle(array) {
-      const a = [...array];
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
+    function resize(){
+      const size = Math.min(window.innerWidth-20,420);
+      canvas.width=size; canvas.height=size;
+      CELL=size/GRID_SIZE;
+      draw();
     }
 
-    function resizeCanvasForMobile() {
-      const width = Math.min(window.innerWidth - 24, 420);
-      const size = Math.max(280, width);
-      canvas.width = size;
-      canvas.height = size;
-      CELL = canvas.width / GRID_SIZE;
-      drawBoard();
+    function start(){
+      reset(); running=true;
+      nextQ();
+      timer=setInterval(step,SPEED);
     }
 
-    function setFeedback(type, text) {
-      feedbackBox.className = `feedback-box ${type}`;
-      feedbackBox.textContent = text;
+    function reset(){
+      snake=[{x:4,y:4}]; dir={x:1,y:0}; nextDir={x:1,y:0};
+      idx=0; score=0; correct=0;
     }
 
-    function resetQuestionCycle() {
-      usedQuestionIds.clear();
+    function nextQ(){
+      current=QUESTIONS[idx++ % QUESTIONS.length];
+      questionText.textContent=current.q;
+      progressLine.textContent=`Q ${idx}`;
+      placeBaits();
     }
 
-    function getNextQuestion() {
-      let available = questionPool.filter(q => !usedQuestionIds.has(q.id));
-      if (available.length === 0) {
-        resetQuestionCycle();
-        available = [...questionPool];
-      }
-      if (!available.length) return null;
-      const q = shuffle(available)[0];
-      usedQuestionIds.add(q.id);
-      return { ...q, options: [...q.options] };
-    }
-
-    function updateProgressLine() {
-      progressLine.innerHTML = `Question: <strong>${askedQuestions}</strong> &nbsp; Length: <strong>${snake.length}</strong> &nbsp; Correct: <strong>${correctAnswers}</strong>`;
-    }
-
-    function roundRect(ctx, x, y, width, height, radius, fill) {
-      if (typeof radius === 'number') radius = { tl: radius, tr: radius, br: radius, bl: radius };
-      ctx.beginPath();
-      ctx.moveTo(x + radius.tl, y);
-      ctx.lineTo(x + width - radius.tr, y);
-      ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-      ctx.lineTo(x + width, y + height - radius.br);
-      ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-      ctx.lineTo(x + radius.bl, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-      ctx.lineTo(x, y + radius.tl);
-      ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-      ctx.closePath();
-      if (fill) ctx.fill();
-    }
-
-    function drawCell(x, y, color, radius = 4) {
-      const px = x * CELL;
-      const py = y * CELL;
-      ctx.fillStyle = color;
-      roundRect(ctx, px + 2, py + 2, CELL - 4, CELL - 4, radius, true);
-    }
-
-    function drawBaitLabel(x, y, label) {
-      const px = x * CELL + CELL / 2;
-      const py = y * CELL + CELL / 2 + 4;
-      ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.max(12, CELL * 0.34)}px Arial`;
-      ctx.textAlign = 'center';
-      ctx.fillText(label, px, py);
-    }
-
-    function drawCenterText(text, color) {
-      ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.fillRect(30, canvas.height / 2 - 28, canvas.width - 60, 56);
-      ctx.fillStyle = color;
-      ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 8);
-    }
-
-    function renderOptionStrip() {
-      optionStrip.innerHTML = '';
-      if (!currentQuestion || !baits.length) return;
-
-      baits.forEach(bait => {
-        const div = document.createElement('div');
-        div.className = 'option-pill';
-        div.innerHTML = `<span class="swatch" style="background:${bait.color}"></span><span><strong>${bait.label}</strong>: ${bait.text}</span>`;
-        optionStrip.appendChild(div);
+    function placeBaits(){
+      baits=[];
+      const used=new Set();
+      current.o.forEach((opt,i)=>{
+        let x,y;
+        do{ x=Math.floor(Math.random()*GRID_SIZE); y=Math.floor(Math.random()*GRID_SIZE);}while(used.has(x+','+y));
+        used.add(x+','+y);
+        baits.push({x,y,opt,correct:opt===current.a,color:BAIT_COLORS[i],label:String.fromCharCode(65+i)});
       });
     }
 
-    function createBaits() {
-      const labels = ['A', 'B', 'C', 'D'];
-      const taken = new Set(snake.map(seg => `${seg.x},${seg.y}`));
-      baits = [];
+    function step(){
+      dir=nextDir;
+      let head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};
+      if(head.x<0) head.x=GRID_SIZE-1;
+      if(head.x>=GRID_SIZE) head.x=0;
+      if(head.y<0) head.y=GRID_SIZE-1;
+      if(head.y>=GRID_SIZE) head.y=0;
 
-      currentQuestion.options.forEach((option, index) => {
-        let x, y, key;
-        do {
-          x = Math.floor(Math.random() * GRID_SIZE);
-          y = Math.floor(Math.random() * GRID_SIZE);
-          key = `${x},${y}`;
-        } while (taken.has(key));
-
-        taken.add(key);
-        baits.push({
-          x,
-          y,
-          text: option,
-          isCorrect: option === currentQuestion.correctAnswer,
-          color: BAIT_COLORS[index],
-          label: labels[index]
-        });
-      });
-
-      renderOptionStrip();
-    }
-
-    function drawBoard() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#020617';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < GRID_SIZE; i++) {
-        for (let j = 0; j < GRID_SIZE; j++) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-          ctx.strokeRect(i * CELL, j * CELL, CELL, CELL);
-        }
-      }
-
-      baits.forEach(bait => {
-        drawCell(bait.x, bait.y, bait.color, 6);
-        drawBaitLabel(bait.x, bait.y, bait.label);
-      });
-
-      snake.forEach((segment, index) => drawCell(segment.x, segment.y, index === 0 ? '#38bdf8' : '#60a5fa', 5));
-
-      if (!running && !gameOver) drawCenterText('Tap Start', 'rgba(255,255,255,0.88)');
-      if (paused && !gameOver) drawCenterText('Paused', 'rgba(255,255,255,0.88)');
-      if (gameOver) drawCenterText('Game Over', '#fca5a5');
-    }
-
-    function isSelfCollision(head) {
-      return snake.some(seg => seg.x === head.x && seg.y === head.y);
-    }
-
-    function getBaitAt(x, y) {
-      return baits.find(bait => bait.x === x && bait.y === y) || null;
-    }
-
-    function moveToNextQuestion() {
-      currentQuestion = getNextQuestion();
-      if (!currentQuestion) {
-        endGame();
-        return;
-      }
-      askedQuestions += 1;
-      questionText.textContent = currentQuestion.question;
-      createBaits();
-      updateProgressLine();
-      setFeedback('info', 'Move the snake to the correct coloured bait.');
-      drawBoard();
-    }
-
-    function step() {
-      if (!running || paused || gameOver) return;
-
-      direction = nextDirection;
-      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
-
-      if (ENABLE_WRAP) {
-        if (head.x < 0) head.x = GRID_SIZE - 1;
-        if (head.x >= GRID_SIZE) head.x = 0;
-        if (head.y < 0) head.y = GRID_SIZE - 1;
-        if (head.y >= GRID_SIZE) head.y = 0;
-      } else {
-        if (head.x < 0 || head.y < 0 || head.x >= GRID_SIZE || head.y >= GRID_SIZE) {
-          endGame();
-          return;
-        }
-      }
-
-      if (isSelfCollision(head)) {
-        endGame();
-        return;
-      }
-
-      const hitBait = getBaitAt(head.x, head.y);
-
-      if (hitBait) {
-        if (hitBait.isCorrect) {
+      const hit=baits.find(b=>b.x===head.x && b.y===head.y);
+      if(hit){
+        if(hit.correct){
           snake.unshift(head);
-          finalScore += CORRECT_BONUS;
-          correctAnswers += 1;
-          setFeedback('correct', `Correct. ${currentQuestion.explanation}`);
-          moveToNextQuestion();
-          return;
-        } else {
-          setFeedback('wrong', 'This bait is not correct. Try another option for the same question.');
-          drawBoard();
-          return;
+          score+=10; correct++;
+          feedback('correct','Correct');
+          nextQ();
+        }else{
+          feedback('wrong','Try again');
         }
+        draw(); return;
       }
 
       snake.unshift(head);
       snake.pop();
-      drawBoard();
+      draw();
     }
 
-    function startLoop() {
-      stopLoop();
-      stepTimer = setInterval(step, BASE_SPEED_MS);
+    function feedback(type,text){
+      feedbackBox.className='feedback-box '+type;
+      feedbackBox.textContent=text;
     }
 
-    function stopLoop() {
-      if (stepTimer) clearInterval(stepTimer);
-      stepTimer = null;
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      baits&&baits.forEach(b=>{
+        ctx.fillStyle=b.color;
+        ctx.fillRect(b.x*CELL,b.y*CELL,CELL,CELL);
+
+        ctx.fillStyle='white';
+        ctx.font=`bold ${CELL*0.3}px Arial`;
+        ctx.textAlign='center';
+        ctx.fillText(b.label,b.x*CELL+CELL/2,b.y*CELL+CELL/2-4);
+
+        ctx.font=`${CELL*0.22}px Arial`;
+        ctx.fillText(b.opt,b.x*CELL+CELL/2,b.y*CELL+CELL/2+10);
+      });
+
+      snake&&snake.forEach((s,i)=>{
+        ctx.fillStyle=i===0?'#38bdf8':'#60a5fa';
+        ctx.fillRect(s.x*CELL,s.y*CELL,CELL,CELL);
+      });
     }
 
-    function startGame() {
-      if (gameOver) resetGame();
-      if (!currentQuestion) moveToNextQuestion();
-      running = true;
-      paused = false;
-      started = true;
-      introCard.style.display = 'none';
-      jsonCard.style.display = 'none';
-      pauseBtn.textContent = 'Pause';
-      startLoop();
-      drawBoard();
+    function change(d){
+      const m={up:{x:0,y:-1},down:{x:0,y:1},left:{x:-1,y:0},right:{x:1,y:0}};
+      nextDir=m[d];
     }
 
-    function pauseGame() {
-      if (!running || gameOver) return;
-      paused = !paused;
-      pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-      drawBoard();
-    }
-
-    function endGame() {
-      running = false;
-      gameOver = true;
-      stopLoop();
-      drawBoard();
-      setTimeout(() => {
-        alert(`Game Over\nFinal Score: ${finalScore}\nCorrect Answers: ${correctAnswers}\nFinal Length: ${snake.length}`);
-      }, 120);
-    }
-
-    function resetGame() {
-      snake = [{ x: 4, y: 4 }];
-      direction = { x: 1, y: 0 };
-      nextDirection = { x: 1, y: 0 };
-      finalScore = 0;
-      correctAnswers = 0;
-      askedQuestions = 0;
-      currentQuestion = null;
-      baits = [];
-      running = false;
-      paused = false;
-      gameOver = false;
-      started = false;
-      pauseBtn.textContent = 'Pause';
-      introCard.style.display = 'block';
-      jsonCard.style.display = 'grid';
-      questionText.textContent = 'Tap Start to begin.';
-      progressLine.textContent = 'Question progress will appear here.';
-      optionStrip.innerHTML = '';
-      setFeedback('info', 'Move the snake toward the bait that matches the correct answer.');
-      drawBoard();
-      stopLoop();
-    }
-
-    function changeDirection(dir) {
-      const map = {
-        up: { x: 0, y: -1 },
-        down: { x: 0, y: 1 },
-        left: { x: -1, y: 0 },
-        right: { x: 1, y: 0 }
-      };
-      const newDir = map[dir];
-      if (!newDir) return;
-      if (snake.length > 1 && newDir.x === -direction.x && newDir.y === -direction.y) return;
-      nextDirection = newDir;
-    }
-
-    function validateQuestionBank(data) {
-      return Array.isArray(data) && data.length > 0 && data.every(q =>
-        typeof q.id === 'string' &&
-        typeof q.question === 'string' &&
-        Array.isArray(q.options) && q.options.length === 4 &&
-        typeof q.correctAnswer === 'string' &&
-        typeof q.explanation === 'string'
-      );
-    }
-
-    async function loadQuestionsFromFile(file) {
-      try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        if (!validateQuestionBank(parsed)) throw new Error('Invalid question format');
-        questionPool = parsed;
-        resetQuestionCycle();
-        fileStatus.textContent = `Loaded ${parsed.length} questions from ${file.name}`;
-        resetGame();
-      } catch {
-        fileStatus.textContent = 'Could not load the selected JSON file. Using built-in questions.';
-        questionPool = BUILT_IN_QUESTIONS;
-        resetQuestionCycle();
-        resetGame();
-      }
-    }
-
-    document.addEventListener('keydown', (e) => {
-      const map = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
-      if (map[e.key]) {
-        e.preventDefault();
-        changeDirection(map[e.key]);
-      }
+    document.querySelectorAll('.ctrl-btn').forEach(b=>{
+      b.onclick=()=>change(b.dataset.dir);
+      b.ontouchstart=e=>{e.preventDefault();change(b.dataset.dir)};
     });
 
-    ctrlButtons.forEach(btn => {
-      btn.addEventListener('click', () => changeDirection(btn.dataset.dir));
-      btn.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        changeDirection(btn.dataset.dir);
-      }, { passive: false });
-    });
+    document.getElementById('startBtn').onclick=start;
+    document.getElementById('resetBtn').onclick=reset;
+    document.getElementById('pauseBtn').onclick=()=>{running=!running};
 
-    startBtn.addEventListener('click', startGame);
-    pauseBtn.addEventListener('click', pauseGame);
-    resetBtn.addEventListener('click', resetGame);
-    wrapToggleBtn.addEventListener('click', () => {
-      ENABLE_WRAP = !ENABLE_WRAP;
-      wrapToggleBtn.textContent = `Wrap: ${ENABLE_WRAP ? 'ON' : 'OFF'}`;
-    });
+    canvas.ontouchstart=e=>{e.preventDefault();};
 
-    jsonFileInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (file) loadQuestionsFromFile(file);
-    });
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    canvas.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      const t = e.changedTouches[0];
-      touchStartX = t.clientX;
-      touchStartY = t.clientY;
-    }, { passive: false });
-
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    canvas.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touchStartX;
-      const dy = t.clientY - touchStartY;
-      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
-      if (Math.abs(dx) > Math.abs(dy)) changeDirection(dx > 0 ? 'right' : 'left');
-      else changeDirection(dy > 0 ? 'down' : 'up');
-    }, { passive: false });
-
-    window.addEventListener('resize', resizeCanvasForMobile);
-
-    function init() {
-      questionPool = BUILT_IN_QUESTIONS;
-      resizeCanvasForMobile();
-      resetGame();
-    }
-
-    init();
+    window.addEventListener('resize',resize);
+    resize();
   </script>
 </body>
 </html>
