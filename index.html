@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Cyber Snake: Smartphone Version</title>
+  <title>Cyber Snake: Tap Bait Smartphone Version</title>
   <style>
     :root {
       --panel: #111827;
@@ -151,7 +151,7 @@
       background: var(--panel-2);
       border-radius: 10px;
       padding: 6px 8px;
-      min-height: 32px;
+      min-height: 38px;
       overflow: hidden;
     }
 
@@ -164,10 +164,9 @@
 
     .option-pill span {
       font-size: 0.74rem;
-      line-height: 1.2;
-      white-space: nowrap;
+      line-height: 1.25;
+      white-space: normal;
       overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     .actions {
@@ -212,20 +211,20 @@
   <div class="app">
     <section class="card">
       <h1 class="title">Cyber Snake</h1>
-      <p class="subtitle">Smartphone version. Tap on the board to change snake direction. Wrap mode is always on.</p>
+      <p class="subtitle">Tap one bait on the board. The snake automatically follows the path to that bait. Only A, B, C and D are shown on the board. Full option details are shown below.</p>
     </section>
 
     <section class="card">
       <div class="question-label">Question</div>
       <div class="question-text" id="questionText">Tap Start to begin.</div>
       <div class="progress-line" id="progressLine">Question progress will appear here.</div>
-      <div class="feedback-box info" id="feedbackBox">Tap the board above, below, left, or right to control the snake.</div>
+      <div class="feedback-box info" id="feedbackBox">Tap one bait option on the board.</div>
     </section>
 
     <section class="card">
       <div class="canvas-wrap">
         <canvas id="gameCanvas" width="340" height="340"></canvas>
-        <div class="tap-hint">Tap board to turn</div>
+        <div class="tap-hint">Tap A / B / C / D</div>
       </div>
       <div class="option-strip" id="optionStrip"></div>
       <div class="actions">
@@ -235,33 +234,31 @@
       </div>
     </section>
 
-    <p class="footer-note">Score is shown at the end only.</p>
+    <p class="footer-note">Wrap mode is always on. Score is shown at the end only.</p>
   </div>
 
   <script>
     const GRID_SIZE = 10;
-    const SPEED = 280;
+    const STEP_SPEED = 120;
     const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
 
     const QUESTIONS = [
-      {q:'Cyber stalking?', o:['Harass','Track','Copy','Block'], a:'Harass'},
-      {q:'Phishing use?', o:['Steal','Speed','Fix','Encrypt'], a:'Steal'},
-      {q:'Piracy?', o:['Legal','Copy','Install','Encrypt'], a:'Copy'},
-      {q:'Hacking?', o:['Access','Mail','Delete','Browse'], a:'Access'},
-      {q:'Spamming?', o:['Bulk msg','Encrypt','Block','Repair'], a:'Bulk msg'},
-      {q:'DoS attack?', o:['Crash','Improve','Secure','Backup'], a:'Crash'},
-      {q:'Salami attack?', o:['Small cuts','Big theft','Mail','Hack'], a:'Small cuts'},
-      {q:'Data diddling?', o:['Change','Delete','Encrypt','Spam'], a:'Change'},
-      {q:'Spoofing?', o:['Fake id','Block','Delete','Encrypt'], a:'Fake id'},
-      {q:'Auction fraud?', o:['Fake sale','Safe','Secure','Fast'], a:'Fake sale'},
-      {q:'Cyber squatting?', o:['Domain','Hack','Spam','Block'], a:'Domain'},
-      {q:'Malware?', o:['Harm','Help','Fix','Scan'], a:'Harm'},
-      {q:'Ransomware?', o:['Demand','Share','Delete','Hide'], a:'Demand'},
-      {q:'Identity theft?', o:['Impersonate','Scan','Block','Fix'], a:'Impersonate'},
-      {q:'Keylogger?', o:['Record','Delete','Encrypt','Scan'], a:'Record'},
-      {q:'Trojan?', o:['Hidden','Fast','Clean','Block'], a:'Hidden'},
-      {q:'Worm?', o:['Spread','Stop','Scan','Fix'], a:'Spread'},
-      {q:'Virus?', o:['Infect','Clean','Block','Delete'], a:'Infect'}
+      {q:'What is cyber stalking?', o:['A person is harassed online','Network speed is monitored','Software is copied illegally','A website is blocked'], a:'A person is harassed online'},
+      {q:'Phishing is mainly used to:', o:['Steal sensitive information','Improve internet speed','Repair malware damage','Encrypt personal files'], a:'Steal sensitive information'},
+      {q:'Software piracy means:', o:['Using open source legally','Copying software illegally','Installing antivirus software','Backing up software files'], a:'Copying software illegally'},
+      {q:'Hacking means:', o:['Unauthorized access to systems','Sending bulk emails','Deleting cookies only','Browsing the web safely'], a:'Unauthorized access to systems'},
+      {q:'Spamming refers to:', o:['Sending bulk unwanted messages','Encrypting email contents','Blocking websites remotely','Repairing a computer'], a:'Sending bulk unwanted messages'},
+      {q:'DoS attack aims to:', o:['Crash or overload a service','Improve network performance','Secure user data','Create backup copies'], a:'Crash or overload a service'},
+      {q:'Salami attack uses:', o:['Small unnoticed thefts','Large theft in one step','Phishing emails only','Password cracking only'], a:'Small unnoticed thefts'},
+      {q:'Data diddling means:', o:['Changing data before processing','Deleting all records','Encrypting stored files','Sending unwanted emails'], a:'Changing data before processing'},
+      {q:'Email spoofing is:', o:['Using a fake sender identity','Blocking incoming emails','Deleting old messages','Encrypting all emails'], a:'Using a fake sender identity'},
+      {q:'Online auction fraud means:', o:['Fake sale or no delivery','Selling genuine goods','Securing online payment','Fast delivery service'], a:'Fake sale or no delivery'},
+      {q:'Cyber squatting means:', o:['Registering domains for resale','Hacking web servers','Sending spam links','Blocking websites'], a:'Registering domains for resale'},
+      {q:'Malware is designed to:', o:['Harm a computer system','Improve computer speed','Repair software bugs','Boost battery life'], a:'Harm a computer system'},
+      {q:'Ransomware is used to:', o:['Demand money from victim','Share free software','Delete browser history','Hide login screen'], a:'Demand money from victim'},
+      {q:'Identity theft means:', o:['Impersonating another person','Scanning a hard disk','Blocking an email account','Fixing system files'], a:'Impersonating another person'},
+      {q:'Keylogger is used to:', o:['Record key presses','Delete text files','Encrypt passwords safely','Scan network speed'], a:'Record key presses'},
+      {q:'Trojan horse is:', o:['A hidden harmful program','A fast computer virus','A cleaning software tool','A firewall rule'], a:'A hidden harmful program'}
     ];
 
     const canvas = document.getElementById('gameCanvas');
@@ -276,17 +273,16 @@
 
     let CELL;
     let snake = [];
-    let dir = {x:1,y:0};
-    let nextDir = {x:1,y:0};
     let baits = [];
     let current = null;
     let idx = 0;
-    let running = false;
-    let paused = false;
-    let timer = null;
     let score = 0;
     let correct = 0;
     let gameStarted = false;
+    let paused = false;
+    let moving = false;
+    let autoPath = [];
+    let timer = null;
 
     function resize() {
       const maxWidth = Math.min(window.innerWidth - 20, 420);
@@ -312,20 +308,19 @@
     function resetState() {
       stopTimer();
       snake = [{x:4,y:4}];
-      dir = {x:1,y:0};
-      nextDir = {x:1,y:0};
       baits = [];
       current = null;
       idx = 0;
-      running = false;
-      paused = false;
       score = 0;
       correct = 0;
       gameStarted = false;
+      paused = false;
+      moving = false;
+      autoPath = [];
       questionText.textContent = 'Tap Start to begin.';
       progressLine.textContent = 'Question progress will appear here.';
       optionStrip.innerHTML = '';
-      feedback('info', 'Tap the board above, below, left, or right to control the snake.');
+      feedback('info', 'Tap one bait option on the board.');
       pauseBtn.textContent = 'Pause';
       draw();
     }
@@ -333,26 +328,24 @@
     function startGame() {
       if (!gameStarted) {
         snake = [{x:4,y:4}];
-        dir = {x:1,y:0};
-        nextDir = {x:1,y:0};
         idx = 0;
         score = 0;
         correct = 0;
         gameStarted = true;
+        paused = false;
+        moving = false;
+        autoPath = [];
         nextQuestion();
+      } else if (paused) {
+        paused = false;
+        pauseBtn.textContent = 'Pause';
       }
-      running = true;
-      paused = false;
-      pauseBtn.textContent = 'Pause';
-      stopTimer();
-      timer = setInterval(step, SPEED);
       draw();
     }
 
     function pauseGame() {
       if (!gameStarted) return;
       paused = !paused;
-      running = !paused;
       pauseBtn.textContent = paused ? 'Resume' : 'Pause';
     }
 
@@ -363,7 +356,9 @@
       progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
       placeBaits();
       renderOptionStrip();
-      feedback('info', 'Move the snake to the correct coloured bait.');
+      moving = false;
+      autoPath = [];
+      feedback('info', 'Tap one bait on the board.');
       draw();
     }
 
@@ -398,45 +393,102 @@
       });
     }
 
-    function step() {
-      if (!running || paused || !gameStarted) return;
+    function neighbors(node, blocked) {
+      return [
+        {x:(node.x + 1) % GRID_SIZE, y:node.y},
+        {x:(node.x - 1 + GRID_SIZE) % GRID_SIZE, y:node.y},
+        {x:node.x, y:(node.y + 1) % GRID_SIZE},
+        {x:node.x, y:(node.y - 1 + GRID_SIZE) % GRID_SIZE}
+      ].filter(n => !blocked.has(`${n.x},${n.y}`));
+    }
 
-      dir = nextDir;
-      const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+    function findPath(start, target) {
+      const blocked = new Set(snake.slice(0, -1).map(s => `${s.x},${s.y}`));
+      blocked.delete(`${target.x},${target.y}`);
+      const queue = [start];
+      const came = new Map();
+      const seen = new Set([`${start.x},${start.y}`]);
 
-      if (head.x < 0) head.x = GRID_SIZE - 1;
-      if (head.x >= GRID_SIZE) head.x = 0;
-      if (head.y < 0) head.y = GRID_SIZE - 1;
-      if (head.y >= GRID_SIZE) head.y = 0;
+      while (queue.length) {
+        const node = queue.shift();
+        if (node.x === target.x && node.y === target.y) {
+          const path = [];
+          let key = `${node.x},${node.y}`;
+          while (came.has(key)) {
+            const cur = key.split(',').map(Number);
+            path.unshift({x:cur[0], y:cur[1]});
+            key = came.get(key);
+          }
+          return path;
+        }
+        for (const n of neighbors(node, blocked)) {
+          const nk = `${n.x},${n.y}`;
+          if (seen.has(nk)) continue;
+          seen.add(nk);
+          came.set(nk, `${node.x},${node.y}`);
+          queue.push(n);
+        }
+      }
+      return [];
+    }
 
-      if (snake.some(s => s.x === head.x && s.y === head.y)) {
+    function beginAutoMove(targetBait) {
+      if (!gameStarted || paused || moving) return;
+      const start = {x: snake[0].x, y: snake[0].y};
+      const path = findPath(start, targetBait);
+      if (!path.length) {
+        feedback('wrong', 'No path available to this bait. Try another one.');
+        return;
+      }
+      autoPath = path;
+      moving = true;
+      feedback('info', `Moving to ${targetBait.label}...`);
+      stopTimer();
+      timer = setInterval(stepAutoMove, STEP_SPEED);
+    }
+
+    function stepAutoMove() {
+      if (paused || !moving) return;
+      if (!autoPath.length) {
+        moving = false;
+        stopTimer();
+        return;
+      }
+
+      const nextStep = autoPath.shift();
+      const hit = baits.find(b => b.x === nextStep.x && b.y === nextStep.y);
+
+      if (snake.some(s => s.x === nextStep.x && s.y === nextStep.y)) {
         endGame();
         return;
       }
 
-      const hit = baits.find(b => b.x === head.x && b.y === head.y);
       if (hit) {
         if (hit.correct) {
-          snake.unshift(head);
+          snake.unshift(nextStep);
           score += 10;
           correct += 1;
+          moving = false;
+          stopTimer();
           feedback('correct', 'Correct');
           nextQuestion();
           return;
         } else {
+          moving = false;
+          stopTimer();
           feedback('wrong', 'Try again');
           draw();
           return;
         }
       }
 
-      snake.unshift(head);
+      snake.unshift(nextStep);
       snake.pop();
       draw();
     }
 
     function endGame() {
-      running = false;
+      moving = false;
       paused = false;
       gameStarted = false;
       stopTimer();
@@ -471,10 +523,8 @@
         drawRoundedCell(b.x, b.y, b.color);
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.font = `bold ${Math.max(11, CELL * 0.28)}px Arial`;
-        ctx.fillText(b.label, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 - 3);
-        ctx.font = `${Math.max(8, CELL * 0.18)}px Arial`;
-        ctx.fillText(b.opt, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 + 10);
+        ctx.font = `bold ${Math.max(14, CELL * 0.32)}px Arial`;
+        ctx.fillText(b.label, b.x * CELL + CELL / 2, b.y * CELL + CELL / 2 + 5);
       });
 
       snake.forEach((s, i) => {
@@ -482,24 +532,21 @@
       });
     }
 
-    function setDirectionFromTap(clientX, clientY) {
+    function getBaitFromPointer(clientX, clientY) {
       const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const dx = x - centerX;
-      const dy = y - centerY;
+      const x = Math.floor(((clientX - rect.left) / rect.width) * GRID_SIZE);
+      const y = Math.floor(((clientY - rect.top) / rect.height) * GRID_SIZE);
+      return baits.find(b => b.x === x && b.y === y) || null;
+    }
 
-      let nd;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        nd = dx > 0 ? {x:1,y:0} : {x:-1,y:0};
-      } else {
-        nd = dy > 0 ? {x:0,y:1} : {x:0,y:-1};
+    function handleBoardTap(clientX, clientY) {
+      if (!gameStarted || paused || moving) return;
+      const bait = getBaitFromPointer(clientX, clientY);
+      if (!bait) {
+        feedback('info', 'Please tap directly on A, B, C or D.');
+        return;
       }
-
-      if (snake.length > 1 && nd.x === -dir.x && nd.y === -dir.y) return;
-      nextDir = nd;
+      beginAutoMove(bait);
     }
 
     startBtn.addEventListener('click', startGame);
@@ -510,13 +557,13 @@
     resetBtn.addEventListener('touchstart', (e) => { e.preventDefault(); resetState(); }, { passive: false });
 
     canvas.addEventListener('click', (e) => {
-      setDirectionFromTap(e.clientX, e.clientY);
+      handleBoardTap(e.clientX, e.clientY);
     });
 
     canvas.addEventListener('touchstart', (e) => {
       e.preventDefault();
       const t = e.changedTouches[0];
-      setDirectionFromTap(t.clientX, t.clientY);
+      handleBoardTap(t.clientX, t.clientY);
     }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
