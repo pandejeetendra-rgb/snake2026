@@ -239,27 +239,29 @@
 
   <script>
     const GRID_SIZE = 10;
-    const STEP_SPEED = 120;
+    const STEP_SPEED = 220;
     const BAIT_COLORS = ['#16a34a','#dc2626','#2563eb','#d97706'];
 
     const QUESTIONS = [
-      {q:'What is cyber stalking?', o:['A person is harassed online','Network speed is monitored','Software is copied illegally','A website is blocked'], a:'A person is harassed online'},
-      {q:'Phishing is mainly used to:', o:['Steal sensitive information','Improve internet speed','Repair malware damage','Encrypt personal files'], a:'Steal sensitive information'},
-      {q:'Software piracy means:', o:['Using open source legally','Copying software illegally','Installing antivirus software','Backing up software files'], a:'Copying software illegally'},
-      {q:'Hacking means:', o:['Unauthorized access to systems','Sending bulk emails','Deleting cookies only','Browsing the web safely'], a:'Unauthorized access to systems'},
-      {q:'Spamming refers to:', o:['Sending bulk unwanted messages','Encrypting email contents','Blocking websites remotely','Repairing a computer'], a:'Sending bulk unwanted messages'},
-      {q:'DoS attack aims to:', o:['Crash or overload a service','Improve network performance','Secure user data','Create backup copies'], a:'Crash or overload a service'},
-      {q:'Salami attack uses:', o:['Small unnoticed thefts','Large theft in one step','Phishing emails only','Password cracking only'], a:'Small unnoticed thefts'},
-      {q:'Data diddling means:', o:['Changing data before processing','Deleting all records','Encrypting stored files','Sending unwanted emails'], a:'Changing data before processing'},
-      {q:'Email spoofing is:', o:['Using a fake sender identity','Blocking incoming emails','Deleting old messages','Encrypting all emails'], a:'Using a fake sender identity'},
-      {q:'Online auction fraud means:', o:['Fake sale or no delivery','Selling genuine goods','Securing online payment','Fast delivery service'], a:'Fake sale or no delivery'},
-      {q:'Cyber squatting means:', o:['Registering domains for resale','Hacking web servers','Sending spam links','Blocking websites'], a:'Registering domains for resale'},
-      {q:'Malware is designed to:', o:['Harm a computer system','Improve computer speed','Repair software bugs','Boost battery life'], a:'Harm a computer system'},
-      {q:'Ransomware is used to:', o:['Demand money from victim','Share free software','Delete browser history','Hide login screen'], a:'Demand money from victim'},
-      {q:'Identity theft means:', o:['Impersonating another person','Scanning a hard disk','Blocking an email account','Fixing system files'], a:'Impersonating another person'},
-      {q:'Keylogger is used to:', o:['Record key presses','Delete text files','Encrypt passwords safely','Scan network speed'], a:'Record key presses'},
-      {q:'Trojan horse is:', o:['A hidden harmful program','A fast computer virus','A cleaning software tool','A firewall rule'], a:'A hidden harmful program'}
+      {q:'What is cyber stalking?', o:['Harassing a person online','Improving network speed','Making software backup','Blocking a printer'], a:'Harassing a person online'},
+      {q:'Phishing is mainly used to:', o:['Steal sensitive information','Improve internet speed','Repair system files','Encrypt all folders'], a:'Steal sensitive information'},
+      {q:'Software piracy means:', o:['Copying software illegally','Using free software legally','Installing antivirus','Updating licensed software'], a:'Copying software illegally'},
+      {q:'Hacking means:', o:['Unauthorized access to a system','Sending bulk email','Deleting cookies only','Browsing privately'], a:'Unauthorized access to a system'},
+      {q:'Spamming refers to:', o:['Sending unwanted bulk messages','Encrypting email contents','Blocking websites remotely','Repairing computers'], a:'Sending unwanted bulk messages'},
+      {q:'A DoS attack tries to:', o:['Overload a service','Improve bandwidth','Secure user data','Create backups'], a:'Overload a service'},
+      {q:'A salami attack uses:', o:['Small hidden thefts','One large theft','Only email hacking','Only password cracking'], a:'Small hidden thefts'},
+      {q:'Data diddling means:', o:['Changing data before processing','Deleting all files','Encrypting a database','Sending spam mail'], a:'Changing data before processing'},
+      {q:'Email spoofing means:', o:['Using a fake sender identity','Deleting old emails','Blocking inbox access','Compressing attachments'], a:'Using a fake sender identity'},
+      {q:'Online auction fraud means:', o:['Fake sale or no delivery','Guaranteed safe sale','Fast delivery only','Secure payment gateway'], a:'Fake sale or no delivery'},
+      {q:'Cyber squatting means:', o:['Registering domains for resale','Hacking web servers','Sending spam ads','Blocking web pages'], a:'Registering domains for resale'},
+      {q:'Malware is designed to:', o:['Harm a computer system','Improve computer speed','Repair software bugs','Save battery power'], a:'Harm a computer system'},
+      {q:'Ransomware is used to:', o:['Demand money from the victim','Share free software','Delete search history','Hide desktop icons'], a:'Demand money from the victim'},
+      {q:'Identity theft means:', o:['Pretending to be another person','Scanning a hard disk','Blocking an email account','Fixing system files'], a:'Pretending to be another person'},
+      {q:'A keylogger is used to:', o:['Record key presses','Delete text files','Encrypt passwords safely','Scan internet speed'], a:'Record key presses'},
+      {q:'A Trojan horse is:', o:['A hidden harmful program','A fast antivirus tool','A safe browser plug-in','A firewall setting'], a:'A hidden harmful program'}
     ];
+
+    let questionDeck = [];
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -317,6 +319,7 @@
       paused = false;
       moving = false;
       autoPath = [];
+      questionDeck = shuffle([...QUESTIONS]);
       questionText.textContent = 'Tap Start to begin.';
       progressLine.textContent = 'Question progress will appear here.';
       optionStrip.innerHTML = '';
@@ -350,7 +353,10 @@
     }
 
     function nextQuestion() {
-      current = QUESTIONS[idx % QUESTIONS.length];
+      if (!questionDeck.length) {
+        questionDeck = shuffle([...QUESTIONS]);
+      }
+      current = questionDeck.shift();
       idx += 1;
       questionText.textContent = current.q;
       progressLine.textContent = `Question: ${idx}   Length: ${snake.length}   Correct: ${correct}`;
