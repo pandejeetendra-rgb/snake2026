@@ -22,112 +22,85 @@
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      overscroll-behavior: none;
+      touch-action: manipulation;
       background: linear-gradient(180deg, #071226, #0f172a);
       color: var(--text);
-      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
       display: flex;
       justify-content: center;
-      padding: 12px;
+      padding: 8px;
     }
 
     .app {
       width: 100%;
-      max-width: 500px;
+      max-width: 460px;
       display: grid;
-      gap: 10px;
-      align-content: start;
-    }
-
-    .top-bar {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 8px;
-      align-items: start;
+      align-content: start;
     }
 
     .card {
       background: rgba(17, 24, 39, 0.96);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 16px;
-      padding: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
     }
 
     h1, h2, p { margin: 0; }
 
     .title {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
       font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    .subtitle, .small {
-      font-size: 0.92rem;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .small { font-size: 0.85rem; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-
-    .stat {
-      background: var(--panel-2);
-      border-radius: 12px;
-      padding: 10px 6px;
-    }
-
-    .stat .label {
-      font-size: 0.72rem;
-      color: var(--muted);
       margin-bottom: 4px;
     }
 
-    .stat .value {
-      font-size: 1rem;
-      font-weight: 700;
+    .subtitle, .small {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.35;
     }
 
     .question-card {
       display: grid;
-      gap: 8px;
-    }
-
-    .mini-stats {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 0.82rem;
-      color: var(--muted);
-      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .question-label {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
 
     .question-text {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      line-height: 1.45;
+      line-height: 1.35;
+      min-height: 2.6em;
+    }
+
+    .progress-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: var(--muted);
     }
 
     .canvas-wrap {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 8px 0;
     }
 
     canvas {
@@ -135,71 +108,54 @@
       border: 2px solid rgba(255,255,255,0.12);
       border-radius: 12px;
       width: 100%;
+      max-width: 100%;
       height: auto;
-      max-width: 420px;
-      touch-action: none;
       display: block;
+      touch-action: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
 
-    .legend {
+    .option-strip {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 6px;
     }
 
-    .legend.compact {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .legend-item {
+    .option-pill {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--panel-2);
       border-radius: 10px;
-      padding: 8px;
-      min-height: 46px;
-    }
-
-    .legend-item.compact {
-      justify-content: center;
-      min-height: 38px;
-      padding: 6px;
+      padding: 7px 8px;
+      min-height: 34px;
+      overflow: hidden;
     }
 
     .swatch {
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
       border-radius: 4px;
-      flex: 0 0 18px;
+      flex: 0 0 14px;
     }
 
-    .legend-text {
-      font-size: 0.84rem;
-      line-height: 1.3;
-      color: var(--text);
-    }
-
-    .legend-letter {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
+    .option-pill span {
+      font-size: 0.76rem;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .feedback-box {
-      min-height: 44px;
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-size: 0.9rem;
-      line-height: 1.45;
+      min-height: 38px;
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-size: 0.82rem;
+      line-height: 1.35;
       background: var(--panel-2);
       color: var(--text);
-    }
-
-    .mobile-note {
-      font-size: 0.78rem;
-      color: var(--muted);
     }
 
     .feedback-box.correct { border-left: 4px solid #22c55e; }
@@ -209,21 +165,20 @@
     .actions {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
 
     .button-row {
-      margin-top: 10px;
+      margin-top: 8px;
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 6px;
-      max-width: 220px;
+      max-width: 210px;
       margin: 0 auto;
       user-select: none;
     }
@@ -232,20 +187,16 @@
 
     .ctrl-btn, .action-btn {
       border: none;
-      border-radius: 14px;
-      padding: 12px 10px;
-      font-size: 0.96rem;
+      border-radius: 12px;
+      padding: 10px 8px;
+      font-size: 0.92rem;
       font-weight: 700;
       color: white;
       background: var(--button);
       cursor: pointer;
-      min-height: 46px;
+      min-height: 44px;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
-    }
-
-    .ctrl-btn:active, .action-btn:active {
-      transform: scale(0.98);
     }
 
     .action-btn.start { background: var(--success); }
@@ -253,9 +204,13 @@
     .action-btn.reset { background: var(--danger); }
     .action-btn.secondary { background: #475569; }
 
+    .hidden-on-play {
+      display: block;
+    }
+
     .file-row {
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
 
     input[type="file"] {
@@ -263,106 +218,52 @@
       color: var(--muted);
       background: var(--panel-2);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 10px;
+      border-radius: 10px;
+      padding: 8px;
+      font-size: 0.82rem;
     }
 
     .footer-note {
       text-align: center;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       color: var(--muted);
-      padding-bottom: 6px;
+      padding-bottom: 4px;
     }
 
-    @media (max-width: 420px) {
-      body {
-        padding: 8px;
-      }
-
-      .app {
-        gap: 8px;
-      }
-
-      .top-bar {
-        grid-template-columns: 1fr;
-      }
-
-      .title {
-        font-size: 1.05rem;
-      }
-
-      .subtitle, .small {
-        font-size: 0.82rem;
-      }
-
-      .question-text {
-        font-size: 0.92rem;
-      }
-
-      .actions {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .legend {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .legend-item {
-        min-height: 38px;
-        padding: 6px;
-        justify-content: center;
-      }
-
-      .legend-text {
-        display: none;
-      }
-
-      .button-row {
-        margin-top: 8px;
-      }
-
-      canvas {
-        max-width: 100%;
-      }
+    @media (max-width: 380px) {
+      body { padding: 6px; }
+      .app { gap: 6px; }
+      .card { padding: 8px; }
+      .question-text { font-size: 0.9rem; }
+      .option-strip { grid-template-columns: 1fr; }
+      .actions { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <section class="card">
+    <section class="card hidden-on-play" id="introCard">
       <h1 class="title">Cyber Snake</h1>
-      <p class="subtitle">A single-screen learning game on <strong>Types of Cyber Crime</strong>. Read the question, guide the snake to one of the four coloured baits, and grow only when the correct bait is chosen.</p>
-    </section>
-
-    <section class="card top-bar">
-      <div class="question-card">
-        <div class="question-label">Current Question</div>
-        <div class="question-text" id="questionText">Tap Start to begin.</div>
-        <div class="mobile-note">On mobile, guide the snake using the arrow buttons below. Choose the correct coloured bait.</div>
-      </div>
-      <div class="question-card">
-        <div class="question-label">Progress</div>
-        <div class="mini-stats">
-          <span>Score: <strong id="scoreValue">0</strong></span>
-          <span>Length: <strong id="lengthValue">1</strong></span>
-          <span>Correct: <strong id="correctValue">0</strong></span>
-          <span>Q: <strong id="askedValue">1</strong></span>
-        </div>
-        <div class="feedback-box info" id="feedbackBox">Move the snake toward the bait that matches the correct answer.</div>
-      </div>
+      <p class="subtitle">Single-screen learning game on <strong>Types of Cyber Crime</strong>. Guide the snake to the correct coloured bait. Correct choice increases snake length. Wrong choice has no effect.</p>
     </section>
 
     <section class="card question-card">
-      <div class="question-label">Answer Baits</div>
-      <div class="legend compact" id="legendWrap"></div>
-      <p class="small">Mobile mode shows only the bait letters on screen to save space. Use short options in your JSON for best readability.</p>
+      <div class="question-label">Current Question</div>
+      <div class="question-text" id="questionText">Tap Start to begin.</div>
+      <div class="progress-line" id="progressLine">Question progress will appear here.</div>
+      <div class="feedback-box info" id="feedbackBox">Move the snake toward the bait that matches the correct answer.</div>
     </section>
 
     <section class="card">
       <div class="canvas-wrap">
-        <canvas id="gameCanvas" width="420" height="420" aria-label="Snake game board"></canvas>
+        <canvas id="gameCanvas" width="360" height="360" aria-label="Snake game board"></canvas>
       </div>
-      <p class="small">Rule: one bait is correct and three are distractors. Correct bait increases score and snake length. Incorrect bait has no effect except a retry message.</p>
+    </section>
+
+    <section class="card question-card">
+      <div class="question-label">Options</div>
+      <div class="option-strip" id="optionStrip"></div>
+      <p class="small">Options stay visible during play so the learner can recall them without breaking game flow.</p>
     </section>
 
     <section class="card">
@@ -387,47 +288,44 @@
       </div>
     </section>
 
-    <section class="card file-row">
-      <h2 class="title" style="font-size:1rem;">Load your own JSON questions</h2>
-      <p class="small">Each question must have exactly 4 options. Required keys: <strong>id</strong>, <strong>question</strong>, <strong>options</strong>, <strong>correctAnswer</strong>, <strong>explanation</strong>.</p>
+    <section class="card file-row hidden-on-play" id="jsonCard">
+      <h2 class="title" style="font-size:0.95rem;">Load your own JSON questions</h2>
+      <p class="small">Each question must have exactly 4 options. Use short option text for the best smartphone experience.</p>
       <input type="file" id="jsonFileInput" accept="application/json" />
       <p class="small" id="fileStatus">Using built-in question bank.</p>
     </section>
 
-    <p class="footer-note">Designed for low cognitive load and smartphone learning.</p>
+    <p class="footer-note">Score is shown at the end to keep the play screen clean.</p>
   </div>
 
   <script>
-    const GRID_SIZE = 12;
-    const BASE_SPEED_MS = 260;
+    const GRID_SIZE = 10;
+    const BASE_SPEED_MS = 280;
     const CORRECT_BONUS = 10;
     let ENABLE_WRAP = true;
 
     const BAIT_COLORS = ['#16a34a', '#dc2626', '#2563eb', '#d97706'];
 
     const BUILT_IN_QUESTIONS = [
-      { id: 'Q1', question: 'What is cyber stalking?', options: ['Monitoring network traffic', 'Harassing someone using internet', 'Stealing software', 'Blocking a website'], correctAnswer: 'Harassing someone using internet', explanation: 'Cyber stalking means threatening, stalking, or harassing a person through internet-based tools.' },
-      { id: 'Q2', question: 'Phishing is mainly used to:', options: ['Improve system speed', 'Steal sensitive information', 'Fix malware', 'Encrypt files'], correctAnswer: 'Steal sensitive information', explanation: 'Phishing tricks users into sharing sensitive information.' },
-      { id: 'Q3', question: 'Software piracy refers to:', options: ['Legal software sharing', 'Copying software illegally', 'Installing antivirus', 'Encrypting data'], correctAnswer: 'Copying software illegally', explanation: 'Software piracy is unauthorized copying or distribution of software.' },
-      { id: 'Q4', question: 'Cyber terrorism is:', options: ['Online shopping fraud', 'Use of computers for political attacks', 'Gaming addiction', 'Sending spam emails'], correctAnswer: 'Use of computers for political attacks', explanation: 'Cyber terrorism uses digital systems to intimidate or attack for political or social aims.' },
-      { id: 'Q5', question: 'Hacking means:', options: ['Improving security only', 'Unauthorized access to systems', 'Sending emails', 'Deleting cookies'], correctAnswer: 'Unauthorized access to systems', explanation: 'Hacking means gaining access to systems beyond authorized limits.' },
-      { id: 'Q6', question: 'Spamming refers to:', options: ['Sending bulk unsolicited messages', 'Encrypting emails', 'Blocking websites', 'Repairing systems'], correctAnswer: 'Sending bulk unsolicited messages', explanation: 'Spamming means sending unwanted bulk messages.' },
-      { id: 'Q7', question: 'Denial of Service attack aims to:', options: ['Improve network performance', 'Crash or overload a system', 'Secure user data', 'Back up files'], correctAnswer: 'Crash or overload a system', explanation: 'A Denial of Service attack floods a service so users cannot access it.' },
-      { id: 'Q8', question: 'Salami attack involves:', options: ['Large data theft in one step', 'Small unnoticed transactions', 'Email hacking', 'Password cracking only'], correctAnswer: 'Small unnoticed transactions', explanation: 'A salami attack uses many tiny changes that often go unnoticed.' },
-      { id: 'Q9', question: 'Data diddling means:', options: ['Deleting all files', 'Changing data before processing', 'Encrypting data', 'Sending spam'], correctAnswer: 'Changing data before processing', explanation: 'Data diddling means changing data before it is processed by the system.' },
-      { id: 'Q10', question: 'Email spoofing is:', options: ['Blocking emails', 'Sending fake emails with forged identity', 'Deleting emails', 'Encrypting emails'], correctAnswer: 'Sending fake emails with forged identity', explanation: 'Email spoofing makes a message look like it came from another source.' },
-      { id: 'Q11', question: 'Online auction fraud involves:', options: ['Selling genuine goods safely', 'Fake online sales or non-delivery', 'Improving security', 'Encrypting payments'], correctAnswer: 'Fake online sales or non-delivery', explanation: 'People may pay for a product that never arrives.' },
-      { id: 'Q12', question: 'Cyber squatting means:', options: ['Blocking websites permanently', 'Registering domain names for resale', 'Hacking servers', 'Sending spam'], correctAnswer: 'Registering domain names for resale', explanation: 'Cyber squatting means reserving domains and later selling them at a higher price.' }
+      { id: 'Q1', question: 'What is cyber stalking?', options: ['Monitoring traffic', 'Harassing online', 'Stealing software', 'Blocking a site'], correctAnswer: 'Harassing online', explanation: 'Cyber stalking means threatening or harassing a person using online tools.' },
+      { id: 'Q2', question: 'Phishing is mainly used to:', options: ['Improve speed', 'Steal information', 'Fix malware', 'Encrypt files'], correctAnswer: 'Steal information', explanation: 'Phishing tricks users into sharing sensitive information.' },
+      { id: 'Q3', question: 'Software piracy means:', options: ['Legal sharing', 'Illegal copying', 'Installing antivirus', 'Encrypting data'], correctAnswer: 'Illegal copying', explanation: 'Software piracy is unauthorized copying or distribution of software.' },
+      { id: 'Q4', question: 'Cyber terrorism is:', options: ['Shopping fraud', 'Political digital attack', 'Gaming addiction', 'Bulk email'], correctAnswer: 'Political digital attack', explanation: 'Cyber terrorism uses digital systems to attack or intimidate for political or social aims.' },
+      { id: 'Q5', question: 'Hacking means:', options: ['Security testing only', 'Unauthorized access', 'Sending emails', 'Deleting cookies'], correctAnswer: 'Unauthorized access', explanation: 'Hacking means accessing a system beyond authorization.' },
+      { id: 'Q6', question: 'Spamming refers to:', options: ['Bulk unwanted messages', 'Encrypting emails', 'Blocking websites', 'Repairing systems'], correctAnswer: 'Bulk unwanted messages', explanation: 'Spamming means sending large numbers of unwanted messages.' },
+      { id: 'Q7', question: 'DoS attack aims to:', options: ['Improve network', 'Overload a system', 'Secure data', 'Back up files'], correctAnswer: 'Overload a system', explanation: 'A Denial of Service attack floods a service so users cannot access it.' },
+      { id: 'Q8', question: 'Salami attack uses:', options: ['Large theft once', 'Small hidden thefts', 'Email hacking', 'Password cracking'], correctAnswer: 'Small hidden thefts', explanation: 'A salami attack uses many tiny changes that often go unnoticed.' },
+      { id: 'Q9', question: 'Data diddling means:', options: ['Deleting files', 'Changing data early', 'Encrypting data', 'Sending spam'], correctAnswer: 'Changing data early', explanation: 'Data diddling means changing data before it is processed.' },
+      { id: 'Q10', question: 'Email spoofing is:', options: ['Blocking emails', 'Fake sender identity', 'Deleting emails', 'Encrypting emails'], correctAnswer: 'Fake sender identity', explanation: 'Email spoofing makes a message look like it came from another source.' },
+      { id: 'Q11', question: 'Online auction fraud means:', options: ['Safe selling', 'Fake sale or no delivery', 'Better security', 'Encrypted payment'], correctAnswer: 'Fake sale or no delivery', explanation: 'Users may pay for a product that never arrives.' },
+      { id: 'Q12', question: 'Cyber squatting means:', options: ['Blocking sites', 'Domain resale', 'Hacking servers', 'Sending spam'], correctAnswer: 'Domain resale', explanation: 'Cyber squatting means registering domains and reselling them at a higher price.' }
     ];
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const scoreValue = document.getElementById('scoreValue');
-    const lengthValue = document.getElementById('lengthValue');
-    const correctValue = document.getElementById('correctValue');
-    const askedValue = document.getElementById('askedValue');
     const questionText = document.getElementById('questionText');
-    const legendWrap = document.getElementById('legendWrap');
+    const progressLine = document.getElementById('progressLine');
+    const optionStrip = document.getElementById('optionStrip');
     const feedbackBox = document.getElementById('feedbackBox');
     const startBtn = document.getElementById('startBtn');
     const pauseBtn = document.getElementById('pauseBtn');
@@ -436,18 +334,20 @@
     const ctrlButtons = document.querySelectorAll('.ctrl-btn');
     const jsonFileInput = document.getElementById('jsonFileInput');
     const fileStatus = document.getElementById('fileStatus');
+    const introCard = document.getElementById('introCard');
+    const jsonCard = document.getElementById('jsonCard');
 
     let CELL = canvas.width / GRID_SIZE;
-
     let snake;
     let direction;
     let nextDirection;
-    let score;
+    let finalScore;
     let correctAnswers;
     let askedQuestions;
     let running;
     let paused;
     let gameOver;
+    let started = false;
     let stepTimer;
     let questionPool = [];
     let usedQuestionIds = new Set();
@@ -461,6 +361,15 @@
         [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
+    }
+
+    function resizeCanvasForMobile() {
+      const width = Math.min(window.innerWidth - 24, 420);
+      const size = Math.max(280, width);
+      canvas.width = size;
+      canvas.height = size;
+      CELL = canvas.width / GRID_SIZE;
+      drawBoard();
     }
 
     function setFeedback(type, text) {
@@ -481,14 +390,11 @@
       if (!available.length) return null;
       const q = shuffle(available)[0];
       usedQuestionIds.add(q.id);
-      return { ...q, options: shuffle(q.options) };
+      return { ...q, options: [...q.options] };
     }
 
-    function updateStats() {
-      scoreValue.textContent = score;
-      lengthValue.textContent = snake.length;
-      correctValue.textContent = correctAnswers;
-      askedValue.textContent = askedQuestions;
+    function updateProgressLine() {
+      progressLine.innerHTML = `Question: <strong>${askedQuestions}</strong> &nbsp; Length: <strong>${snake.length}</strong> &nbsp; Correct: <strong>${correctAnswers}</strong>`;
     }
 
     function roundRect(ctx, x, y, width, height, radius, fill) {
@@ -507,15 +413,6 @@
       if (fill) ctx.fill();
     }
 
-    function resizeCanvasForMobile() {
-      const maxWidth = Math.min(window.innerWidth - 24, 420);
-      const size = Math.max(280, maxWidth);
-      canvas.width = size;
-      canvas.height = size;
-      CELL = canvas.width / GRID_SIZE;
-      drawBoard();
-    }
-
     function drawCell(x, y, color, radius = 4) {
       const px = x * CELL;
       const py = y * CELL;
@@ -527,18 +424,30 @@
       const px = x * CELL + CELL / 2;
       const py = y * CELL + CELL / 2 + 4;
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 14px Arial';
+      ctx.font = `bold ${Math.max(12, CELL * 0.34)}px Arial`;
       ctx.textAlign = 'center';
       ctx.fillText(label, px, py);
     }
 
     function drawCenterText(text, color) {
       ctx.fillStyle = 'rgba(0,0,0,0.45)';
-      ctx.fillRect(45, canvas.height / 2 - 28, canvas.width - 90, 56);
+      ctx.fillRect(30, canvas.height / 2 - 28, canvas.width - 60, 56);
       ctx.fillStyle = color;
-      ctx.font = 'bold 22px Arial';
+      ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 8);
+    }
+
+    function renderOptionStrip() {
+      optionStrip.innerHTML = '';
+      if (!currentQuestion || !baits.length) return;
+
+      baits.forEach(bait => {
+        const div = document.createElement('div');
+        div.className = 'option-pill';
+        div.innerHTML = `<span class="swatch" style="background:${bait.color}"></span><span><strong>${bait.label}</strong>: ${bait.text}</span>`;
+        optionStrip.appendChild(div);
+      });
     }
 
     function createBaits() {
@@ -565,29 +474,7 @@
         });
       });
 
-      renderQuestionArea();
-    }
-
-    function renderQuestionArea() {
-      if (!currentQuestion) {
-        questionText.textContent = 'Tap Start to begin.';
-        legendWrap.innerHTML = '';
-        return;
-      }
-
-      questionText.textContent = currentQuestion.question;
-      legendWrap.innerHTML = '';
-
-      baits.forEach(bait => {
-        const item = document.createElement('div');
-        item.className = 'legend-item compact';
-        item.innerHTML = `
-          <span class="swatch" style="background:${bait.color}"></span>
-          <div class="legend-letter">${bait.label}</div>
-          <div class="legend-text">${bait.text}</div>
-        `;
-        legendWrap.appendChild(item);
-      });
+      renderOptionStrip();
     }
 
     function drawBoard() {
@@ -597,7 +484,7 @@
 
       for (let i = 0; i < GRID_SIZE; i++) {
         for (let j = 0; j < GRID_SIZE; j++) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.05)';
           ctx.strokeRect(i * CELL, j * CELL, CELL, CELL);
         }
       }
@@ -609,8 +496,8 @@
 
       snake.forEach((segment, index) => drawCell(segment.x, segment.y, index === 0 ? '#38bdf8' : '#60a5fa', 5));
 
-      if (!running && !gameOver) drawCenterText('Tap Start to Begin', 'rgba(255,255,255,0.85)');
-      if (paused && !gameOver) drawCenterText('Paused', 'rgba(255,255,255,0.85)');
+      if (!running && !gameOver) drawCenterText('Tap Start', 'rgba(255,255,255,0.88)');
+      if (paused && !gameOver) drawCenterText('Paused', 'rgba(255,255,255,0.88)');
       if (gameOver) drawCenterText('Game Over', '#fca5a5');
     }
 
@@ -629,9 +516,10 @@
         return;
       }
       askedQuestions += 1;
+      questionText.textContent = currentQuestion.question;
       createBaits();
-      updateStats();
-      setFeedback('info', 'Move the snake toward the bait that matches the correct answer.');
+      updateProgressLine();
+      setFeedback('info', 'Move the snake to the correct coloured bait.');
       drawBoard();
     }
 
@@ -663,9 +551,8 @@
       if (hitBait) {
         if (hitBait.isCorrect) {
           snake.unshift(head);
-          score += CORRECT_BONUS;
+          finalScore += CORRECT_BONUS;
           correctAnswers += 1;
-          updateStats();
           setFeedback('correct', `Correct. ${currentQuestion.explanation}`);
           moveToNextQuestion();
           return;
@@ -696,6 +583,9 @@
       if (!currentQuestion) moveToNextQuestion();
       running = true;
       paused = false;
+      started = true;
+      introCard.style.display = 'none';
+      jsonCard.style.display = 'none';
       pauseBtn.textContent = 'Pause';
       startLoop();
       drawBoard();
@@ -714,15 +604,15 @@
       stopLoop();
       drawBoard();
       setTimeout(() => {
-        alert(`Game Over\nScore: ${score}\nFinal Length: ${snake.length}\nCorrect Answers: ${correctAnswers}`);
+        alert(`Game Over\nFinal Score: ${finalScore}\nCorrect Answers: ${correctAnswers}\nFinal Length: ${snake.length}`);
       }, 120);
     }
 
     function resetGame() {
-      snake = [{ x: 6, y: 6 }];
+      snake = [{ x: 4, y: 4 }];
       direction = { x: 1, y: 0 };
       nextDirection = { x: 1, y: 0 };
-      score = 0;
+      finalScore = 0;
       correctAnswers = 0;
       askedQuestions = 0;
       currentQuestion = null;
@@ -730,9 +620,13 @@
       running = false;
       paused = false;
       gameOver = false;
+      started = false;
       pauseBtn.textContent = 'Pause';
-      updateStats();
-      renderQuestionArea();
+      introCard.style.display = 'block';
+      jsonCard.style.display = 'grid';
+      questionText.textContent = 'Tap Start to begin.';
+      progressLine.textContent = 'Question progress will appear here.';
+      optionStrip.innerHTML = '';
       setFeedback('info', 'Move the snake toward the bait that matches the correct answer.');
       drawBoard();
       stopLoop();
@@ -786,7 +680,14 @@
       }
     });
 
-    ctrlButtons.forEach(btn => btn.addEventListener('click', () => changeDirection(btn.dataset.dir)));
+    ctrlButtons.forEach(btn => {
+      btn.addEventListener('click', () => changeDirection(btn.dataset.dir));
+      btn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        changeDirection(btn.dataset.dir);
+      }, { passive: false });
+    });
+
     startBtn.addEventListener('click', startGame);
     pauseBtn.addEventListener('click', pauseGame);
     resetBtn.addEventListener('click', resetGame);
@@ -819,18 +720,18 @@
       const t = e.changedTouches[0];
       const dx = t.clientX - touchStartX;
       const dy = t.clientY - touchStartY;
-      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
       if (Math.abs(dx) > Math.abs(dy)) changeDirection(dx > 0 ? 'right' : 'left');
       else changeDirection(dy > 0 ? 'down' : 'up');
     }, { passive: false });
+
+    window.addEventListener('resize', resizeCanvasForMobile);
 
     function init() {
       questionPool = BUILT_IN_QUESTIONS;
       resizeCanvasForMobile();
       resetGame();
     }
-
-    window.addEventListener('resize', resizeCanvasForMobile);
 
     init();
   </script>
