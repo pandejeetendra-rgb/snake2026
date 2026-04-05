@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Cyber Snake: Types of Cyber Crime</title>
   <style>
     :root {
@@ -39,6 +39,13 @@
       display: grid;
       gap: 10px;
       align-content: start;
+    }
+
+    .top-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: start;
     }
 
     .card {
@@ -94,6 +101,15 @@
       gap: 8px;
     }
 
+    .mini-stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
     .question-label {
       font-size: 0.78rem;
       color: var(--muted);
@@ -132,6 +148,10 @@
       margin-top: 8px;
     }
 
+    .legend.compact {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     .legend-item {
       display: flex;
       align-items: center;
@@ -140,6 +160,12 @@
       border-radius: 10px;
       padding: 8px;
       min-height: 46px;
+    }
+
+    .legend-item.compact {
+      justify-content: center;
+      min-height: 38px;
+      padding: 6px;
     }
 
     .swatch {
@@ -155,6 +181,12 @@
       color: var(--text);
     }
 
+    .legend-letter {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
     .feedback-box {
       min-height: 44px;
       border-radius: 12px;
@@ -163,6 +195,11 @@
       line-height: 1.45;
       background: var(--panel-2);
       color: var(--text);
+    }
+
+    .mobile-note {
+      font-size: 0.78rem;
+      color: var(--muted);
     }
 
     .feedback-box.correct { border-left: 4px solid #22c55e; }
@@ -185,8 +222,8 @@
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      max-width: 300px;
+      gap: 6px;
+      max-width: 220px;
       margin: 0 auto;
       user-select: none;
     }
@@ -196,13 +233,15 @@
     .ctrl-btn, .action-btn {
       border: none;
       border-radius: 14px;
-      padding: 14px 12px;
-      font-size: 1rem;
+      padding: 12px 10px;
+      font-size: 0.96rem;
       font-weight: 700;
       color: white;
       background: var(--button);
       cursor: pointer;
-      min-height: 52px;
+      min-height: 46px;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     .ctrl-btn:active, .action-btn:active {
@@ -236,9 +275,55 @@
     }
 
     @media (max-width: 420px) {
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .actions { grid-template-columns: 1fr; }
-      .legend { grid-template-columns: 1fr; }
+      body {
+        padding: 8px;
+      }
+
+      .app {
+        gap: 8px;
+      }
+
+      .top-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .title {
+        font-size: 1.05rem;
+      }
+
+      .subtitle, .small {
+        font-size: 0.82rem;
+      }
+
+      .question-text {
+        font-size: 0.92rem;
+      }
+
+      .actions {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .legend {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .legend-item {
+        min-height: 38px;
+        padding: 6px;
+        justify-content: center;
+      }
+
+      .legend-text {
+        display: none;
+      }
+
+      .button-row {
+        margin-top: 8px;
+      }
+
+      canvas {
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -249,18 +334,28 @@
       <p class="subtitle">A single-screen learning game on <strong>Types of Cyber Crime</strong>. Read the question, guide the snake to one of the four coloured baits, and grow only when the correct bait is chosen.</p>
     </section>
 
-    <section class="card stats">
-      <div class="stat"><div class="label">Score</div><div class="value" id="scoreValue">0</div></div>
-      <div class="stat"><div class="label">Length</div><div class="value" id="lengthValue">1</div></div>
-      <div class="stat"><div class="label">Correct</div><div class="value" id="correctValue">0</div></div>
-      <div class="stat"><div class="label">Question</div><div class="value" id="askedValue">1</div></div>
+    <section class="card top-bar">
+      <div class="question-card">
+        <div class="question-label">Current Question</div>
+        <div class="question-text" id="questionText">Tap Start to begin.</div>
+        <div class="mobile-note">On mobile, guide the snake using the arrow buttons below. Choose the correct coloured bait.</div>
+      </div>
+      <div class="question-card">
+        <div class="question-label">Progress</div>
+        <div class="mini-stats">
+          <span>Score: <strong id="scoreValue">0</strong></span>
+          <span>Length: <strong id="lengthValue">1</strong></span>
+          <span>Correct: <strong id="correctValue">0</strong></span>
+          <span>Q: <strong id="askedValue">1</strong></span>
+        </div>
+        <div class="feedback-box info" id="feedbackBox">Move the snake toward the bait that matches the correct answer.</div>
+      </div>
     </section>
 
     <section class="card question-card">
-      <div class="question-label">Current Question</div>
-      <div class="question-text" id="questionText">Tap Start to begin.</div>
-      <div class="legend" id="legendWrap"></div>
-      <div class="feedback-box info" id="feedbackBox">Move the snake toward the bait that matches the correct answer.</div>
+      <div class="question-label">Answer Baits</div>
+      <div class="legend compact" id="legendWrap"></div>
+      <p class="small">Mobile mode shows only the bait letters on screen to save space. Use short options in your JSON for best readability.</p>
     </section>
 
     <section class="card">
@@ -303,8 +398,8 @@
   </div>
 
   <script>
-    const GRID_SIZE = 14;
-    const BASE_SPEED_MS = 230;
+    const GRID_SIZE = 12;
+    const BASE_SPEED_MS = 260;
     const CORRECT_BONUS = 10;
     let ENABLE_WRAP = true;
 
@@ -342,7 +437,7 @@
     const jsonFileInput = document.getElementById('jsonFileInput');
     const fileStatus = document.getElementById('fileStatus');
 
-    const CELL = canvas.width / GRID_SIZE;
+    let CELL = canvas.width / GRID_SIZE;
 
     let snake;
     let direction;
@@ -412,6 +507,15 @@
       if (fill) ctx.fill();
     }
 
+    function resizeCanvasForMobile() {
+      const maxWidth = Math.min(window.innerWidth - 24, 420);
+      const size = Math.max(280, maxWidth);
+      canvas.width = size;
+      canvas.height = size;
+      CELL = canvas.width / GRID_SIZE;
+      drawBoard();
+    }
+
     function drawCell(x, y, color, radius = 4) {
       const px = x * CELL;
       const py = y * CELL;
@@ -476,10 +580,11 @@
 
       baits.forEach(bait => {
         const item = document.createElement('div');
-        item.className = 'legend-item';
+        item.className = 'legend-item compact';
         item.innerHTML = `
           <span class="swatch" style="background:${bait.color}"></span>
-          <div class="legend-text"><strong>${bait.label}</strong>: ${bait.text}</div>
+          <div class="legend-letter">${bait.label}</div>
+          <div class="legend-text">${bait.text}</div>
         `;
         legendWrap.appendChild(item);
       });
@@ -699,23 +804,33 @@
     let touchStartY = 0;
 
     canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
       const t = e.changedTouches[0];
       touchStartX = t.clientX;
       touchStartY = t.clientY;
-    }, { passive: true });
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
 
     canvas.addEventListener('touchend', (e) => {
+      e.preventDefault();
       const t = e.changedTouches[0];
       const dx = t.clientX - touchStartX;
       const dy = t.clientY - touchStartY;
+      if (Math.abs(dx) < 12 && Math.abs(dy) < 12) return;
       if (Math.abs(dx) > Math.abs(dy)) changeDirection(dx > 0 ? 'right' : 'left');
       else changeDirection(dy > 0 ? 'down' : 'up');
-    }, { passive: true });
+    }, { passive: false });
 
     function init() {
       questionPool = BUILT_IN_QUESTIONS;
+      resizeCanvasForMobile();
       resetGame();
     }
+
+    window.addEventListener('resize', resizeCanvasForMobile);
 
     init();
   </script>
